@@ -1,0 +1,87 @@
+/*
+ * Tombol hamburger animasi (garis -> X). Diubah dari SCSS ke CSS biasa.
+ * Animasinya ikut status menu: aria-expanded="true" (menu terbuka) = X, "false" (menu tertutup) = hamburger.
+ * Warna garis mengikuti warna tombol (currentColor).
+ */
+.tg {
+    display: block;
+    width: 20px;
+    height: 14px;
+    position: relative;
+}
+
+/* Dua baris garis (atas & bawah) */
+.tg-bars {
+    position: absolute;
+    inset: 0;
+    transition: transform .5s ease;
+}
+
+.tg-bars span {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.tg-bars span:first-child { top: 0; }
+.tg-bars span:last-child { bottom: 0; }
+.tg-bars span:first-child::before, .tg-bars span:first-child::after { top: 0; }
+.tg-bars span:last-child::before, .tg-bars span:last-child::after { bottom: 0; }
+
+.tg-bars span::before,
+.tg-bars span::after {
+    content: '';
+    display: block;
+    width: 47%;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    position: absolute;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transition: transform .5s ease, border-radius .3s ease, background .4s ease;
+}
+
+.tg-bars span::before { left: 0; transform-origin: 0 50%; transform: translate(1px, 0) scaleX(1.1); }
+.tg-bars span::after { right: 0; transform-origin: 100% 50%; transform: translate(-1px, 0) scaleX(1.1); }
+
+/* Dua lengkung yang menggambar lingkaran di sekeliling X */
+.tg svg {
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4px;
+    stroke-linecap: round;
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -18px 0 0 -18px;
+    stroke-dasharray: 0 82.801 8 82.801;
+    stroke-dashoffset: 82.801;
+    transform-origin: 50% 50%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: scale(1);
+    transition: stroke-dashoffset .5s ease, stroke-dasharray .6s ease, transform .5s ease, stroke .4s ease;
+}
+
+.tg svg:nth-child(3) { transform: rotate(180deg) scale(1); }
+
+/* ----- Menu terbuka: garis berubah jadi X ----- */
+[aria-expanded="true"] > .tg .tg-bars { transform: rotate(90deg); }
+
+[aria-expanded="true"] > .tg .tg-bars span:first-child::before { transform: rotate(45deg) translate(2.2px, -3px) scaleX(1.05); }
+[aria-expanded="true"] > .tg .tg-bars span:first-child::after { transform: rotate(-45deg) translate(-2.2px, -3px) scaleX(1.05); }
+[aria-expanded="true"] > .tg .tg-bars span:last-child::before { transform: rotate(-45deg) translate(2.2px, 3px) scaleX(1.05); }
+[aria-expanded="true"] > .tg .tg-bars span:last-child::after { transform: rotate(45deg) translate(-2.2px, 3px) scaleX(1.05); }
+
+[aria-expanded="true"] > .tg svg {
+    stroke-dashoffset: 62;
+    stroke-dasharray: 0 82.801 62 82.801;
+    transform: rotate(90deg);
+}
+
+[aria-expanded="true"] > .tg svg:nth-child(3) { transform: rotate(270deg); }

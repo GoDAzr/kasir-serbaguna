@@ -1,0 +1,56 @@
+/* ================= DESKTOP ================= */
+@media (min-width: 992px) {
+    /* Sidebar terbuka bawaan; tombol hamburger mengecilkannya jadi deretan shortcut ikon */
+    .app { --ml: var(--sidebar-w); }
+    .app.collapsed { --ml: var(--rail-w); }
+
+    .sidebar { transform: none; box-shadow: none; max-width: none; overflow: hidden; transition: width .25s ease, box-shadow .25s ease; }
+    .main { margin-left: var(--ml); }
+    .menu-close { display: none !important; }
+    .backdrop { display: none; }
+    .topbar-slot.is-fixed { padding: 10px 32px; }
+
+    .app.collapsed .sidebar { width: var(--rail-w); }
+    .app.collapsed.peek .sidebar { width: var(--sidebar-w); box-shadow: 0 0 40px rgba(0,0,0,.18); }
+
+    /* --- Tampilan shortcut (menu samping dikecilkan) --- */
+    .app.collapsed:not(.peek) .sidebar-head { padding: 12px 0 0; }
+    .app.collapsed:not(.peek) .sidebar-head img,
+    .app.collapsed:not(.peek) .head-btns,
+    .app.collapsed:not(.peek) .nav-label,
+    .app.collapsed:not(.peek) .nav form,
+    .app.collapsed:not(.peek) .sidebar .mg-title,
+    .app.collapsed:not(.peek) .sidebar .mg-chev,
+    .app.collapsed:not(.peek) .sidebar .mi-label,
+    .app.collapsed:not(.peek) .user-card div:not(.avatar) { display: none; }
+
+    .app.collapsed:not(.peek) .nav { padding: 12px 0; align-items: center; scrollbar-width: none; }
+    .app.collapsed:not(.peek) .nav::-webkit-scrollbar { display: none; }
+    .app.collapsed:not(.peek) .nav > a { width: 52px; padding: 6px; gap: 0; justify-content: center; font-size: 0; }
+    .app.collapsed:not(.peek) .dd.side .mg-list { justify-items: center; gap: 4px; }
+    .app.collapsed:not(.peek) .dd.side .mg { width: 52px; }
+    .app.collapsed:not(.peek) .dd.side .mg > .mg-head,
+    .app.collapsed:not(.peek) .dd.side .mg .mi-head { width: 52px; padding: 6px; gap: 0; justify-content: center; }
+    .app.collapsed:not(.peek) .dd.side .mg.open > .mg-body > .mg-inner { padding: 0; }
+    /* Kalau ada kategori terbuka: yang tampil hanya isinya (Kasir / POS, Pelanggan, dll) */
+    .app.collapsed:not(.peek) .dd.side.has-open .mg:not(.open),
+    .app.collapsed:not(.peek) .dd.side.has-open .mg.open > .mg-head { display: none; }
+    .app.collapsed:not(.peek) .user-card { margin: 8px auto 14px; padding: 6px; border: 0; }
+
+    .hero { padding: 22px 32px 32px; }
+    .greet h1 { font-size: 28px; }
+    .greet p { font-size: 14px; }
+    .revenue { padding: 22px 26px; }
+    .revenue-amount { font-size: 46px; }
+
+    .content {
+        padding: 28px 32px 48px;
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+        grid-template-areas:
+            "actions attention"
+            "recent  attention";
+        align-items: start;
+    }
+
+    .dd.wide .mg-list, .dd.wide .dd-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

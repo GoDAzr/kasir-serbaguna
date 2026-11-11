@@ -1,0 +1,135 @@
+/* ================= MENU BERTINGKAT ================= */
+/* Warna tiap kategori: --t kotak ikon, --c ikon, --soft latar lembut, --a warna aksen */
+.g-hijau  { --t: #14B856; --c: #FFFFFF; --soft: #E8F9EF; --a: #0C8F3F; }
+.g-biru   { --t: #1E5BFF; --c: #FFFFFF; --soft: #E7EEFF; --a: #1E5BFF; }
+.g-kuning { --t: #FFD500; --c: #0B1220; --soft: #FFF8CC; --a: #A67C00; }
+.g-jingga { --t: #F97316; --c: #FFFFFF; --soft: #FFF0E3; --a: #D9600A; }
+.g-hitam  { --t: #0B1220; --c: #FFFFFF; --soft: #E9ECF1; --a: #0B1220; }
+.g-toska  { --t: #06A3C7; --c: #FFFFFF; --soft: #DDF5FA; --a: #0586A3; }
+.g-merah  { --t: #E5202E; --c: #FFFFFF; --soft: #FDE6E8; --a: #C21A27; }
+.g-abu    { --t: #64748B; --c: #FFFFFF; --soft: #EEF1F5; --a: #475569; }
+.g-ungu   { --t: #7C3AED; --c: #FFFFFF; --soft: #F0E9FF; --a: #6D28D9; }
+
+/* Hanya satu tampilan terlihat: daftar kategori, atau halaman pilihan di dalam sebuah menu */
+.dd-view { display: none; }
+.dd-view.is-on { display: block; }
+.dd-view.fwd { animation: ddFwd .28s ease; }
+.dd-view.bck { animation: ddBck .28s ease; }
+@keyframes ddFwd { from { opacity: 0; transform: translateX(28px); }  to { opacity: 1; transform: none; } }
+@keyframes ddBck { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+
+.mg-list { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+
+/* ----- Kategori: buka-tutup ----- */
+.mg-head {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; border: 0; background: none;
+    font: inherit; color: var(--black); text-align: left; cursor: pointer;
+}
+.mg-title { flex: 1; min-width: 0; font-weight: 800; line-height: 1.2; }
+.mg-title small, .dd-title small { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.mg-chev { width: 18px; height: 18px; flex: none; color: var(--muted); transition: transform .25s, color .2s; }
+.mg.open .mg-chev { transform: rotate(90deg); color: var(--a); }
+
+/* Buka-tutup halus: tinggi berubah dari 0 ke penuh */
+.mg-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+.mg-inner { overflow: hidden; min-height: 0; visibility: hidden; transition: visibility 0s .3s; }
+.mg.open > .mg-body { grid-template-rows: 1fr; }
+.mg.open > .mg-body > .mg-inner { visibility: visible; transition-delay: 0s; }
+
+/* Baris menu di dalam kategori (tanpa tanda panah) */
+.mg .mi-head {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; border: 0; background: none;
+    font: inherit; color: var(--black); text-align: left; cursor: pointer;
+    transition: background .15s;
+}
+.mi-ico {
+    width: 36px; height: 36px; flex: none;
+    border-radius: 11px;
+    background: var(--soft); color: var(--a);
+    display: grid; place-items: center;
+    transition: background .2s, color .2s;
+}
+.mi-ico .ico { width: 19px; height: 19px; }
+.mi-label { flex: 1; min-width: 0; font-weight: 600; line-height: 1.25; }
+.mg .mi-head:hover, .mg .mi-head.active { background: var(--soft); }
+.mg .mi-head.active .mi-ico { background: var(--t); color: var(--c); }
+.mg .mi-head.active .mi-label { font-weight: 800; }
+.mg .mi-head:hover .mi-ico, .sub-card:hover .mi-ico { background: var(--t); color: var(--c); }
+
+/* ----- Versi halaman dashboard: kartu per kategori ----- */
+.dd.wide .mg { background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+.dd.wide .mg:hover, .dd.wide .mg.open { border-color: var(--t); }
+.dd.wide .mg:hover { box-shadow: 0 8px 22px -10px var(--t); }
+.dd.wide .mg > .mg-head { padding: 14px 16px; font-size: 16px; transition: background .2s; }
+.dd.wide .mg:hover > .mg-head, .dd.wide .mg.open > .mg-head { background: var(--soft); }
+.dd.wide .mg .chip { width: 46px; height: 46px; border-radius: 15px; transition: transform .2s; }
+.dd.wide .mg .chip .ico { width: 24px; height: 24px; }
+.dd.wide .mg:hover > .mg-head .chip { transform: scale(1.06) rotate(-4deg); }
+.dd.wide .mg > .mg-body > .mg-inner { padding: 0 8px; }
+.dd.wide .mg.open > .mg-body > .mg-inner { padding: 6px 8px 10px; }
+.dd.wide .mg .mi-head { padding: 9px 10px; border-radius: 12px; font-size: 15px; }
+
+/* ----- Versi menu samping ----- */
+.dd.side .mg > .mg-head { padding: 8px 12px; border-radius: 14px; font-size: 15px; transition: background .15s; }
+.dd.side .mg > .mg-head:hover, .dd.side .mg.open > .mg-head { background: var(--soft); }
+.dd.side .mg .chip { width: 34px; height: 34px; border-radius: 11px; }
+.dd.side .mg .chip .ico { width: 19px; height: 19px; }
+.dd.side .mg-chev { box-sizing: content-box; padding: 9px; margin: -9px; cursor: pointer; border-radius: 10px; }
+.dd.side .mg-chev:hover { color: var(--a); }
+.dd.side .mg.open > .mg-body > .mg-inner { padding: 2px 0 8px 4px; }
+.dd.side .mg .mi-head { padding: 7px 10px; border-radius: 12px; font-size: 14px; }
+.dd.side .mg .mi-ico { width: 32px; height: 32px; border-radius: 10px; }
+.dd.side .mg .mi-ico .ico { width: 17px; height: 17px; }
+
+/* ----- Halaman pilihan di dalam sebuah menu ----- */
+.dd-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; margin-bottom: 12px;
+    background: var(--soft); border: 1px solid var(--t); border-radius: 16px;
+}
+.dd-back {
+    width: 40px; height: 40px; flex: none;
+    border: 0; border-radius: 12px;
+    background: var(--white); color: var(--a);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s, transform 80ms;
+}
+.dd-back .ico { width: 20px; height: 20px; transform: rotate(180deg); }
+.dd-back:hover { background: var(--t); color: var(--c); }
+.dd-back:active { transform: scale(.92); }
+.dd-head .chip { width: 44px; height: 44px; border-radius: 14px; }
+.dd-head .chip .ico { width: 23px; height: 23px; }
+.dd-title { flex: 1; min-width: 0; font-size: 17px; font-weight: 800; line-height: 1.2; }
+
+.dd-list { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
+.sub-card {
+    width: 100%; font: inherit; text-align: left; cursor: pointer;
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 18px;
+    color: var(--black);
+    transition: background .15s, border-color .15s, box-shadow .2s, transform 80ms;
+}
+.sub-card .mi-ico { width: 52px; height: 52px; border-radius: 15px; }
+.sub-card .mi-ico .ico { width: 26px; height: 26px; }
+.sub-text { flex: 1; min-width: 0; }
+.sub-text b { display: block; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.sub-text small { display: block; margin-top: 3px; font-size: 13.5px; font-weight: 500; color: var(--muted); line-height: 1.3; }
+.sub-card:hover { background: var(--soft); border-color: var(--t); box-shadow: 0 8px 22px -12px var(--t); }
+.sub-card:active { transform: scale(.985); }
+
+/* Versi menu samping: lebih rapat, tanpa bingkai */
+.dd.side .dd-head { padding: 8px; margin-bottom: 8px; gap: 10px; border-color: transparent; border-radius: 14px; }
+.dd.side .dd-back { width: 34px; height: 34px; border-radius: 11px; }
+.dd.side .dd-head .chip { width: 34px; height: 34px; border-radius: 11px; }
+.dd.side .dd-head .chip .ico { width: 19px; height: 19px; }
+.dd.side .dd-title { font-size: 15px; }
+.dd.side .dd-list { gap: 2px; }
+.dd.side .sub-card { padding: 8px 10px; gap: 12px; border-color: transparent; border-radius: 14px; background: none; }
+.dd.side .sub-text b { font-size: 14px; font-weight: 600; }
+.dd.side .sub-text small { font-size: 12px; margin-top: 1px; }
+.dd.side .sub-card:hover { box-shadow: none; background: var(--soft); }
+.dd.side .sub-card .mi-ico { width: 32px; height: 32px; border-radius: 10px; }
+.dd.side .sub-card .mi-ico .ico { width: 17px; height: 17px; }

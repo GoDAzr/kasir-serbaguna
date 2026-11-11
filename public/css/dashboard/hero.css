@@ -1,0 +1,70 @@
+/* ================= ISI HALAMAN ================= */
+.main { transition: margin-left .3s ease; min-height: 100vh; }
+
+.hero {
+    background: linear-gradient(160deg, var(--blue-light) 0%, var(--blue) 45%, var(--blue-dark) 100%);
+    color: var(--white);
+    padding: 16px 16px 26px;
+    position: relative;
+}
+
+.topbar {
+    display: flex; align-items: center; gap: 10px;
+    max-width: 1100px; margin: 0 auto;
+}
+
+/* Bar atas (sapaan + tombol) ikut turun saat halaman di-scroll */
+.topbar-slot.is-fixed {
+    position: fixed; top: 0; right: 0;
+    left: var(--ml, 0px);
+    z-index: 45;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, var(--blue-light), var(--blue));
+    box-shadow: 0 6px 18px -8px rgba(0,0,0,.35);
+    transition: left .3s ease;
+}
+
+.icon-btn {
+    width: 42px; height: 42px; flex: none;
+    border: 0; border-radius: 14px;
+    background: rgba(255,255,255,.16);
+    color: var(--white);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .15s, transform 80ms;
+}
+
+.icon-btn:hover { background: rgba(255,255,255,.26); }
+.icon-btn:active { transform: scale(.94); }
+
+/* Tiap tombol di header punya warna sendiri */
+.icon-btn.btn-menu { background: var(--white); color: var(--blue); }
+.icon-btn.btn-menu:hover { background: #E8FBF0; }
+.icon-btn.btn-gear { background: var(--yellow); color: var(--black); }
+.icon-btn.btn-gear:hover { background: #FFE24D; }
+.icon-btn.btn-out { background: var(--red); color: var(--white); }
+.icon-btn.btn-out:hover { background: #F03A47; }
+
+.greet { flex: 1; min-width: 0; }
+.greet h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.greet p { margin: 2px 0 0; font-size: 13px; opacity: .85; }
+
+.revenue {
+    max-width: 1100px; margin: 18px auto 0;
+    background: rgba(255,255,255,.14);
+    border-radius: 22px;
+    padding: 18px 20px;
+}
+
+.revenue-top { display: flex; justify-content: space-between; font-size: 14px; opacity: .9; }
+
+.revenue-amount { font-size: 38px; font-weight: 800; margin: 6px 0 14px; letter-spacing: -.01em; }
+
+.progress { height: 10px; border-radius: 99px; background: rgba(255,255,255,.28); overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--yellow); border-radius: 99px; transition: width .6s ease; }
+
+.revenue-split { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; font-size: 14px; }
+.revenue-split span { display: inline-flex; align-items: center; gap: 8px; }
+.revenue-split b { font-weight: 800; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot.cash { background: var(--yellow); }
+.dot.noncash { background: rgba(255,255,255,.55); }
