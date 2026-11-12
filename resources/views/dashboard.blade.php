@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     {{-- Tampilan: public/css/dashboard/*.css (urutan jangan ditukar) --}}
-    @foreach (['base', 'sidebar', 'hero', 'toggle', 'content', 'menu', 'desktop'] as $css)
+    @foreach (['base', 'sidebar', 'hero', 'toggle', 'content', 'menu', 'desktop', 'pages'] as $css)
         <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}">
     @endforeach
 </head>

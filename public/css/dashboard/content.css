@@ -3,9 +3,10 @@
     padding: 22px 16px 40px;
     display: grid; gap: 24px;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "attention" "actions" "recent";
+    grid-template-areas: "summary" "attention" "actions" "recent";
 }
 
+.sec-summary { grid-area: summary; display: grid; gap: 14px; }
 .sec-attention { grid-area: attention; }
 .sec-actions { grid-area: actions; }
 .sec-recent { grid-area: recent; }

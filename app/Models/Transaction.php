@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
+    use BelongsToBusiness;
+
     protected $fillable = [
+        'business_id', 'branch_id', 'shift', 'type', 'payment_status', 'payment_ref', 'payment_proof',
+        'receipt_note', 'cancel_reason', 'cancel_note', 'voided_by',
         'invoice_no',
         'client_uuid',
         'user_id',

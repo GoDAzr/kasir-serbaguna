@@ -1,9 +1,11 @@
 {{-- Isi halaman: perlu perhatian, menu, transaksi terakhir --}}
 <main class="content">
+    @include('partials.summary')
+
     <section class="sec-attention">
         <h2 class="sec-title">Perlu perhatian</h2>
         @if ($lowStock > 0)
-            <a href="#" data-soon="Inventori" class="card alert">
+            <a href="{{ route('notifikasi') }}" class="card alert">
                 <div class="alert-num">{{ $lowStock }}</div>
                 <div>
                     <b>Stok rendah</b>

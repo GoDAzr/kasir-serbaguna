@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\BusinessSetup;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,14 +54,32 @@ class WebAuthController extends Controller
             'password.min' => 'Password minimal 8 karakter.',
         ]);
 
-        // Pendaftar lewat halaman ini adalah pemilik usaha (owner) -> role admin.
-        // Password otomatis di-hash oleh cast 'hashed' di model User.
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-            'role' => 'admin',
-        ]);
+        // Pendaftar lewat halaman ini adalah pemilik usaha (owner): dibuatkan usaha baru + data awalnya
+        // (cabang, gudang, role, akun kas, metode bayar). Password di-hash oleh cast 'hashed'.
+        $user = DB::transaction(function () use ($data) {
+            $businessId = BusinessSetup::create('Toko ' . explode(' ', trim($data['name']))[0]);
+
+            $base = Str::slug(Str::before($data['email'], '@'), '_') ?: 'user';
+            $username = $base;
+            while (User::where('username', $username)->exists()) {
+                $username = $base . '_' . Str::lower(Str::random(3));
+            }
+
+            $user = User::create([
+                'business_id' => $businessId,
+                'name' => $data['name'],
+                'username' => $username,
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'role' => 'owner',
+            ]);
+            DB::table('branch_user')->insert([
+                'user_id' => $user->id,
+                'branch_id' => DB::table('branches')->where('business_id', $businessId)->value('id'),
+            ]);
+
+            return $user;
+        });
 
         Auth::login($user);
         $request->session()->regenerate();

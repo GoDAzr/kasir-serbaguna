@@ -45,7 +45,7 @@
 
     // Dashboard: kembali ke daftar awal (tanpa muat ulang halaman)
     var dash = document.getElementById('navDashboard');
-    if (dash) {
+    if (dash && wide) {
         dash.addEventListener('click', function (e) {
             e.preventDefault();
             stack = ['root'];
@@ -55,6 +55,14 @@
         });
     }
 
+    // Dibuka dari halaman lain lewat ?m=g1i0
+    var want = /[?&]m=(g\d+(?:i\d+)?)/.exec(window.location.search);
+    if (want && wide) {
+        var mm = /^(g\d+)(i\d+)?/.exec(want[1]);
+        stack = mm[2] ? ['root', mm[1], want[1]] : ['root', mm[1]];
+        render('fwd');
+    }
+
     document.addEventListener('click', function (e) {
         var go = e.target.closest('[data-go]');
 
@@ -62,6 +70,11 @@
             var id = go.getAttribute('data-go');
             if (go.closest('.dd.side')) {
                 var gid = /^(g\d+)/.exec(id)[1];
+                // Halaman dalam (tanpa kartu menu): menu yang punya pilihan dibuka di dashboard
+                if (!wide && id !== gid) {
+                    window.location.href = (window.DASH_URL || '/dashboard') + '?m=' + id;
+                    return;
+                }
                 if (e.target.closest('[data-toggle]')) {
                     // Panah >: hanya buka / tutup isi kategori, menu samping tidak menutup
                     stack = (stack[1] === gid) ? ['root'] : ['root', gid];

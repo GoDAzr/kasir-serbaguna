@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\StockMovement;
+use App\Services\StockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -53,8 +53,8 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'category_id' => 'nullable|exists:categories,id',
-            'sku' => 'required|string|max:50|unique:products,sku',
-            'barcode' => 'nullable|string|max:50|unique:products,barcode',
+            'sku' => 'required|string|max:50|unique:products,sku,NULL,id,business_id,' . $request->user()->business_id,
+            'barcode' => 'nullable|string|max:50|unique:products,barcode,NULL,id,business_id,' . $request->user()->business_id,
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
@@ -65,18 +65,13 @@ class ProductController extends Controller
         ]);
 
         $product = DB::transaction(function () use ($data, $request) {
-            $product = Product::create($data);
+            $initial = (int) ($data['stock'] ?? 0);
+            $product = Product::create(array_merge($data, ['stock' => 0]));
 
-            // Stok awal dicatat di riwayat stok
-            if (($data['stock'] ?? 0) > 0) {
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'user_id' => $request->user()->id,
-                    'type' => 'in',
-                    'qty' => $product->stock,
-                    'stock_after' => $product->stock,
-                    'note' => 'Stok awal',
-                ]);
+            // Stok awal dicatat di riwayat stok & gudang utama
+            if ($initial > 0) {
+                StockService::move($product->id, StockService::defaultWarehouse(), $initial, 'in', ['note' => 'Stok awal']);
+                $product->refresh();
             }
 
             return $product;

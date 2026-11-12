@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\StockMovement;
+use App\Services\StockService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -35,32 +35,17 @@ class StockController extends Controller
             'note' => 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($data, $request, $product) {
-            $locked = Product::whereKey($product->id)->lockForUpdate()->first();
+        DB::transaction(function () use ($data, $product) {
+            $wh = StockService::defaultWarehouse();
+            $cur = StockService::qty($product->id, $wh);
 
-            $newStock = match ($data['type']) {
-                'in' => $locked->stock + $data['qty'],
-                'out' => $locked->stock - $data['qty'],
-                'adjust' => $data['qty'],
+            $delta = match ($data['type']) {
+                'in' => $data['qty'],
+                'out' => -$data['qty'],
+                'adjust' => $data['qty'] - $cur,
             };
 
-            if ($newStock < 0) {
-                throw ValidationException::withMessages([
-                    'qty' => ['Stok tidak mencukupi untuk dikurangi.'],
-                ]);
-            }
-
-            $delta = $newStock - $locked->stock;
-            $locked->update(['stock' => $newStock]);
-
-            StockMovement::create([
-                'product_id' => $locked->id,
-                'user_id' => $request->user()->id,
-                'type' => $data['type'],
-                'qty' => $delta,
-                'stock_after' => $newStock,
-                'note' => $data['note'] ?? null,
-            ]);
+            StockService::move($product->id, $wh, $delta, $data['type'], ['note' => $data['note'] ?? null]);
         });
 
         return response()->json($product->fresh()->load('category'));

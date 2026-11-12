@@ -47,6 +47,7 @@
         padding: 28px 32px 48px;
         grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
         grid-template-areas:
+            "summary summary"
             "actions attention"
             "recent  attention";
         align-items: start;

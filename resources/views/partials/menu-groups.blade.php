@@ -4,10 +4,18 @@
       Kanan ($variant = 'wide') : kartu kategori -> isi kategori -> pilihan di dalam menu (mis. Kasir / POS)
     Isi menu diatur di config/menu.php
 --}}
+@php
+    $can = fn ($perm) => ! $perm || \App\Support\Tenant::can($perm);
+    $groups = [];
+    foreach (config('menu.groups') as $gi => $g) {
+        $g['items'] = array_filter($g['items'], fn ($it) => $can($it[4] ?? null));
+        if ($g['items']) { $groups[$gi] = $g; }
+    }
+@endphp
 @if ($variant === 'side')
 <div class="dd side">
     <div class="mg-list">
-        @foreach (config('menu.groups') as $gi => $g)
+        @foreach ($groups as $gi => $g)
             <div class="mg g-{{ $g['color'] }}" data-group="g{{ $gi }}">
                 <button type="button" class="mg-head" data-go="g{{ $gi }}" aria-expanded="false" title="{{ $g['title'] }}">
                     <span class="chip"><svg class="ico"><use href="#i-{{ $g['icon'] }}"/></svg></span>
@@ -24,7 +32,7 @@
                                     <span class="mi-label">{{ $it[0] }}</span>
                                 </button>
                             @else
-                                <a href="#" class="mi-head" data-soon="{{ $it[0] }}" title="{{ $it[0] }}">
+                                <a href="{{ $it[3] ? url($it[3]) : '#' }}" class="mi-head" @if (! $it[3]) data-soon="{{ $it[0] }}" @endif title="{{ $it[0] }}">
                                     <span class="mi-ico"><svg class="ico"><use href="#i-{{ $it[1] }}"/></svg></span>
                                     <span class="mi-label">{{ $it[0] }}</span>
                                 </a>
@@ -42,7 +50,7 @@
     {{-- Awal: daftar kategori --}}
     <div class="dd-view is-on" data-view="root" data-title="Menu">
         <div class="mg-list">
-            @foreach (config('menu.groups') as $gi => $g)
+            @foreach ($groups as $gi => $g)
                 <div class="mg g-{{ $g['color'] }}">
                     <button type="button" class="mg-head" data-go="g{{ $gi }}">
                         <span class="chip"><svg class="ico"><use href="#i-{{ $g['icon'] }}"/></svg></span>
@@ -54,7 +62,7 @@
         </div>
     </div>
 
-    @foreach (config('menu.groups') as $gi => $g)
+    @foreach ($groups as $gi => $g)
         {{-- Isi kategori --}}
         <div class="dd-view g-{{ $g['color'] }}" data-view="g{{ $gi }}" data-title="{{ $g['title'] }}">
             <div class="dd-head">
@@ -73,7 +81,7 @@
                             </span>
                         </button>
                     @else
-                        <a href="#" class="sub-card" data-soon="{{ $it[0] }}">
+                        <a href="{{ $it[3] ? url($it[3]) : '#' }}" class="sub-card" @if (! $it[3]) data-soon="{{ $it[0] }}" @endif>
                             <span class="mi-ico"><svg class="ico"><use href="#i-{{ $it[1] }}"/></svg></span>
                             <span class="sub-text"><b>{{ $it[0] }}</b></span>
                         </a>
@@ -93,7 +101,7 @@
                     </div>
                     <div class="dd-list">
                         @foreach ($it[2] as $sub)
-                            <a href="#" class="sub-card" data-soon="{{ $sub[0] }}">
+                            <a href="{{ $sub[3] ? url($sub[3]) : '#' }}" class="sub-card" @if (! $sub[3]) data-soon="{{ $sub[0] }}" @endif>
                                 <span class="mi-ico"><svg class="ico"><use href="#i-{{ $sub[2] }}"/></svg></span>
                                 <span class="sub-text">
                                     <b>{{ $sub[0] }}</b>

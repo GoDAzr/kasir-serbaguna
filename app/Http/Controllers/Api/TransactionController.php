@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\StockService;
 use App\Models\StockMovement;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -117,6 +118,8 @@ class TransactionController extends Controller
                 ]);
             }
 
+            $branchId = DB::table('branches')->where('business_id', $request->user()->business_id)->orderBy('id')->value('id');
+            $warehouseId = StockService::defaultWarehouse($branchId);
             $invoiceNo = 'INV-' . now()->format('ymdHis') . '-' . Str::upper(Str::random(3));
 
             $transaction = Transaction::create([
@@ -132,6 +135,7 @@ class TransactionController extends Controller
                 'change' => $paid - $total,
                 'payment_method' => $data['payment_method'],
                 'status' => 'paid',
+                'branch_id' => $branchId,
                 'note' => $data['note'] ?? null,
             ]);
 
@@ -148,16 +152,7 @@ class TransactionController extends Controller
                     'subtotal' => $row['line_total'],
                 ]);
 
-                $product->decrement('stock', $row['qty']);
-
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'user_id' => $request->user()->id,
-                    'type' => 'sale',
-                    'qty' => -$row['qty'],
-                    'stock_after' => $product->stock,
-                    'reference' => $invoiceNo,
-                ]);
+                StockService::move($product->id, $warehouseId, -$row['qty'], 'sale', ['reference' => $invoiceNo]);
             }
 
             return $transaction;
@@ -186,16 +181,8 @@ class TransactionController extends Controller
                     continue;
                 }
 
-                $product->increment('stock', $item->qty);
-
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'user_id' => $request->user()->id,
-                    'type' => 'void',
-                    'qty' => $item->qty,
-                    'stock_after' => $product->stock,
-                    'reference' => $transaction->invoice_no,
-                    'note' => 'Pembatalan transaksi',
+                StockService::move($product->id, StockService::defaultWarehouse($transaction->branch_id), $item->qty, 'void', [
+                    'reference' => $transaction->invoice_no, 'note' => 'Pembatalan transaksi',
                 ]);
             }
 

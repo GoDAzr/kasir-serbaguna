@@ -13,7 +13,7 @@
     </div>
 
     <nav class="nav">
-        <a href="{{ route('dashboard') }}" class="active" id="navDashboard" title="Dashboard"><span class="chip c-home"><svg class="ico"><use href="#i-home"/></svg></span>Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" id="navDashboard" title="Dashboard"><span class="chip c-home"><svg class="ico"><use href="#i-home"/></svg></span>Dashboard</a>
 
         <div class="nav-label">Menu</div>
         @include('partials.menu-groups', ['variant' => 'side'])
@@ -26,10 +26,14 @@
     </nav>
 
     <div class="user-card">
-        <div class="avatar">{{ $firstName[0] }}</div>
+        @if (! empty($userPhoto))
+            <img class="avatar" src="{{ $userPhoto }}" alt="" style="object-fit:cover">
+        @else
+            <div class="avatar">{{ mb_strtoupper(mb_substr($firstName, 0, 1)) }}</div>
+        @endif
         <div>
             <b>{{ $fullName }}</b>
-            <small>{{ $roleLabel }}</small>
+            <small>{{ $roleLabel }}@if (! empty($bizName)) &middot; {{ $bizName }}@endif</small>
         </div>
     </div>
 </aside>

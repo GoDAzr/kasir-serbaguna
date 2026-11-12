@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, BelongsToBusiness;
 
     protected $fillable = [
+        'business_id', 'type', 'description', 'rental_period', 'rental_unit', 'service_duration',
+        'digital_code', 'digital_nominal', 'bundle_discount', 'promo_start', 'promo_end',
         'category_id',
         'sku',
         'barcode',

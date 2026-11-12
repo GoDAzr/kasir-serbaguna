@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ $label }} - {{ $biz->name }}</title>
+<style>body{font-family:system-ui,sans-serif;background:#f4f6fa;margin:0;display:grid;place-items:center;min-height:100vh}.c{background:#fff;border-radius:20px;padding:28px;text-align:center;max-width:340px;box-shadow:0 10px 40px -20px #0004}h1{margin:0 0 4px}small{color:#64748b}img{width:240px;height:240px;margin:14px 0}button{padding:10px 18px;border:0;border-radius:12px;background:#14B856;color:#fff;font-weight:700;cursor:pointer}@media print{button{display:none}}</style></head>
+<body><div class="c"><small>{{ $biz->name }} &middot; {{ $branch }}</small><h1>{{ $label }}</h1><small>{{ $kind }}</small><br>
+<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode(url('/qr/' . $token)) }}"><br><small>{{ url('/qr/' . $token) }}</small><br><br><button onclick="window.print()">Cetak</button></div></body></html>
