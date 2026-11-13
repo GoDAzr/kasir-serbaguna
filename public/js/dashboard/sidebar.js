@@ -1,6 +1,9 @@
 /*
- * Menu samping: HP (geser dari kiri), desktop (dikecilkan jadi shortcut ikon),
- * arahkan kursor untuk melebar sementara, dan gembok (kunci / tutup otomatis).
+ * Menu samping: HP (geser dari kiri), desktop (dikecilkan jadi shortcut ikon), dan gembok.
+ *   - Gembok TERBUKA : menu menutup sendiri setelah salah satu menu diklik.
+ *   - Gembok TERKUNCI: menu tetap terbuka.
+ *   - Menu yang dikecilkan hanya melebar kalau hamburger ditekan (kursor di atasnya tidak melebarkan),
+ *     ikon-ikonnya tetap bisa diklik.
  * Dipakai bersama file lain lewat window.Dashboard.
  */
 (function () {
@@ -15,66 +18,54 @@
     var desktop = window.matchMedia('(min-width: 992px)');
 
     var locked = false;
-    var suppressPeek = false;
     try { locked = localStorage.getItem('menuLocked') === '1'; } catch (e) {}
 
     function setExpanded(v) { menuBtn.setAttribute('aria-expanded', v ? 'true' : 'false'); }
 
-    // ----- Gembok: terkunci = tidak menutup sendiri, terbuka = menutup otomatis -----
+    // ----- Gembok -----
     function paintLock() {
         menuLock.classList.toggle('on', locked);
         menuLock.setAttribute('aria-pressed', locked ? 'true' : 'false');
         menuLock.querySelector('use').setAttribute('href', locked ? '#i-lock' : '#i-unlock');
         menuLock.title = locked
-            ? 'Menu terkunci, tidak menutup otomatis (klik untuk buka kunci)'
+            ? 'Menu terkunci, tetap terbuka (klik untuk buka kunci)'
             : 'Menu menutup otomatis setelah dipilih (klik untuk kunci)';
     }
 
-    menuLock.addEventListener('click', function () {
-        locked = !locked;
+    function setLocked(v) {
+        locked = v;
         try { localStorage.setItem('menuLocked', locked ? '1' : '0'); } catch (e) {}
         paintLock();
-        if (locked && desktop.matches) { setCollapsed(false, true); }   // dikunci = menu tampil terus
-    });
-    paintLock();
+    }
 
     // ----- HP: menu geser dari kiri + latar gelap -----
-    function openDrawer() {
-        sidebar.classList.add('open');
-        backdrop.classList.add('show');
-        setExpanded(true);
-    }
+    function openDrawer() { sidebar.classList.add('open'); backdrop.classList.add('show'); setExpanded(true); }
+    function closeDrawer() { sidebar.classList.remove('open'); backdrop.classList.remove('show'); setExpanded(false); }
 
-    function closeDrawer() {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('show');
-        setExpanded(false);
-    }
-
-    // ----- Desktop: hamburger mengecilkan / melebarkan menu samping -----
-    function setCollapsed(v, persist) {
+    // ----- Desktop: melebar / mengecil, selalu disimpan supaya halaman lain ikut -----
+    function setCollapsed(v) {
         app.classList.toggle('collapsed', v);
-        if (!v) { app.classList.remove('peek'); }
         setExpanded(!v);
-        if (persist) {
-            try { localStorage.setItem('menuCollapsed', v ? '1' : '0'); } catch (e) {}
-        }
+        try { localStorage.setItem('menuCollapsed', v ? '1' : '0'); } catch (e) {}
     }
 
-    // Dipanggil setelah sebuah menu dipilih: menutup sendiri kecuali dikunci
+    menuLock.addEventListener('click', function () {
+        setLocked(!locked);
+        if (locked && desktop.matches) { setCollapsed(false); }   // dikunci = menu terbuka terus
+    });
+
+    // Dipanggil setelah sebuah menu diklik: menutup sendiri kecuali dikunci
     D.afterMenuClick = function () {
         if (locked) { return; }
         if (!desktop.matches) { closeDrawer(); return; }
-        if (app.classList.contains('peek')) {
-            app.classList.remove('peek');
-            suppressPeek = true;
-        }
-        setCollapsed(true, false);   // menutup otomatis tidak disimpan, hanya hamburger yang disimpan
+        setCollapsed(true);
     };
 
     menuBtn.addEventListener('click', function () {
         if (desktop.matches) {
-            setCollapsed(!app.classList.contains('collapsed') || app.classList.contains('peek'), true);
+            var collapse = !app.classList.contains('collapsed');
+            if (collapse && locked) { setLocked(false); }   // hamburger menutup = tidak lagi terkunci
+            setCollapsed(collapse);
             return;
         }
         sidebar.classList.contains('open') ? closeDrawer() : openDrawer();
@@ -84,23 +75,11 @@
     backdrop.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeDrawer(); } });
 
-    // ----- Desktop: kursor / klik area kosong pada shortcut -> melebar sementara -----
-    sidebar.addEventListener('mouseenter', function () {
-        if (desktop.matches && app.classList.contains('collapsed') && !suppressPeek) {
-            app.classList.add('peek');
-        }
-    });
-
-    sidebar.addEventListener('mouseleave', function () {
-        suppressPeek = false;
-        app.classList.remove('peek');
-    });
-
+    // Menu berupa link (pindah halaman): tutup dulu supaya halaman berikutnya ikut mengecil
     sidebar.addEventListener('click', function (e) {
-        var rail = app.classList.contains('collapsed') && !app.classList.contains('peek');
-        if (desktop.matches && rail && !e.target.closest('a, button')) {
-            app.classList.add('peek');
-        }
+        var a = e.target.closest('a[href]');
+        if (!a || a.hasAttribute('data-soon') || a.getAttribute('href') === '#') { return; }
+        D.afterMenuClick();
     });
 
     // ----- Sesuaikan dengan ukuran layar -----
@@ -109,16 +88,16 @@
             closeDrawer();
             var saved = null;
             try { saved = localStorage.getItem('menuCollapsed'); } catch (e) {}
-            var collapsed = !locked && saved === '1';   // dikunci = selalu tampil
+            var collapsed = !locked && saved === '1';   // dikunci = selalu terbuka
             app.classList.toggle('collapsed', collapsed);
-            app.classList.remove('peek');
             setExpanded(!collapsed);
         } else {
-            app.classList.remove('collapsed', 'peek');
+            app.classList.remove('collapsed');
             setExpanded(sidebar.classList.contains('open'));
         }
     }
 
+    paintLock();
     sync();
     (desktop.addEventListener ? desktop.addEventListener('change', sync) : desktop.addListener(sync));
 })();

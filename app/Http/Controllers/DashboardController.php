@@ -16,9 +16,9 @@ class DashboardController extends Controller
         $hour = (int) $now->format('G');
 
         $greeting = match (true) {
-            $hour < 11 => 'Selamat Pagi',
-            $hour < 15 => 'Selamat Siang',
-            $hour < 18 => 'Selamat Sore',
+            $hour >= 4 && $hour < 11 => 'Selamat Pagi',
+            $hour >= 11 && $hour < 15 => 'Selamat Siang',
+            $hour >= 15 && $hour < 18 => 'Selamat Sore',
             default => 'Selamat Malam',
         };
 
@@ -68,6 +68,7 @@ class DashboardController extends Controller
             'fullName' => $fullName,
             'roleLabel' => $roleLabel,
             'dateLabel' => $now->locale('id')->translatedFormat('l, j F Y'),
+            'tz' => config('app.timezone'),
             'txCount' => $txCount,
             'revenue' => $this->rupiah($revenue),
             'cash' => $this->rupiah($cash),
@@ -131,7 +132,7 @@ class DashboardController extends Controller
         }
 
         $logs = DB::table('audit_logs')->where('audit_logs.business_id', $b)->leftJoin('users', 'users.id', '=', 'audit_logs.user_id')
-            ->orderByDesc('audit_logs.id')->limit(6)->get(['audit_logs.*', 'users.name as user_name']);
+            ->orderByDesc('audit_logs.id')->limit(200)->get(['audit_logs.*', 'users.name as user_name']);
 
         return [
             'sum' => [

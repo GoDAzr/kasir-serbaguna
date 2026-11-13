@@ -11,14 +11,12 @@
                     </span>
                 </button>
 
-                <div class="greet">
-                    <h1>{{ $greeting }}, {{ $firstName }}</h1>
-                    <p>{{ $dateLabel }}</p>
+                <div class="greet" id="greet" data-tz="{{ $tz ?? config('app.timezone') }}">
+                    <h1><span id="greetText">{{ $greeting }}</span>, {{ $firstName }}</h1>
+                    <p id="dateText">{{ $dateLabel }}</p>
                 </div>
 
-                <button class="icon-btn btn-gear" type="button" data-soon="Pengaturan" aria-label="Pengaturan">
-                    <svg class="ico"><use href="#i-gear"/></svg>
-                </button>
+                @include('partials.settings-menu')
                 <form method="POST" action="{{ route('logout') }}" style="display:contents">
                     @csrf
                     <button class="icon-btn btn-out" type="submit" aria-label="Keluar">

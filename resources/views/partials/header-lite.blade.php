@@ -18,7 +18,7 @@
 
                 @yield('top_actions')
 
-                <a class="icon-btn btn-gear" href="{{ route('dashboard') }}" aria-label="Dashboard" title="Dashboard"><svg class="ico"><use href="#i-home"/></svg></a>
+                @include('partials.settings-menu')
                 <form method="POST" action="{{ route('logout') }}" style="display:contents">
                     @csrf
                     <button class="icon-btn btn-out" type="submit" aria-label="Keluar"><svg class="ico"><use href="#i-logout"/></svg></button>

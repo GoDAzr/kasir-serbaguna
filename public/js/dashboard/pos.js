@@ -142,11 +142,33 @@
         if (e.key !== 'Enter') { return; }
         e.preventDefault();
         var code = this.value.trim(); if (!code) { return; }
-        var hit = DATA.items.filter(function (p) { return p.barcode === code || p.sku === code; })[0];
-        if (hit) { add(hit, null); fillAmount(); window.Dashboard && Dashboard.toast(hit.name + ' ditambahkan'); }
-        else { window.Dashboard && Dashboard.toast('Barcode ' + code + ' tidak ditemukan'); }
+        var hit = scanCode(code);
+        window.Dashboard && Dashboard.toast(hit ? hit.name + ' ditambahkan' : 'Barcode ' + code + ' tidak ditemukan');
         this.value = '';
     });
+
+    // Cari produk dari barcode / SKU (EAN-13 berawalan 0 = UPC-A), lalu masukkan ke keranjang
+    function scanCode(code) {
+        var alt = code.replace(/^0+/, '');
+        var hit = DATA.items.filter(function (p) {
+            return p.barcode === code || p.sku === code || (p.barcode && p.barcode.replace(/^0+/, '') === alt);
+        })[0];
+        if (hit) { add(hit, null); fillAmount(); }
+        return hit;
+    }
+
+    // ---------- Scan pakai kamera ----------
+    function openCam() {
+        $('camModal').hidden = false;
+        Dashboard.scanCamera($('camVideo'), function (code) {
+            var hit = scanCode(code);
+            $('camMsg').textContent = hit ? hit.name + ' ditambahkan' : 'Barcode ' + code + ' tidak ditemukan';
+        }, function (msg) { $('camMsg').textContent = msg; });
+    }
+    function closeCam() { Dashboard.stopCamera(); $('camModal').hidden = true; $('posScan').focus(); }
+    $('posCam').addEventListener('click', openCam);
+    $('camClose').addEventListener('click', closeCam);
+    $('camModal').addEventListener('click', function (e) { if (e.target === this) { closeCam(); } });
 
     $('varList').addEventListener('click', function (e) {
         var b = e.target.closest('[data-v]'); if (!b) { return; }
@@ -233,5 +255,5 @@
     $('doneNew').addEventListener('click', function () { window.location.href = window.location.pathname; });
 
     cats(); grid(); draw();
-    if (new URLSearchParams(location.search).get('scan')) { $('posScan').focus(); }
+    if (new URLSearchParams(location.search).get('scan')) { $('posScan').focus(); openCam(); }
 })();

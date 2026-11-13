@@ -35,7 +35,7 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     {{-- Perilaku: public/js/dashboard/*.js --}}
-    @foreach (['sidebar', 'topbar', 'menu', 'toast'] as $js)
+    @foreach (['sidebar', 'topbar', 'menu', 'toast', 'clock', 'summary'] as $js)
         <script src="{{ asset('js/dashboard/' . $js . '.js') }}"></script>
     @endforeach
 </body>

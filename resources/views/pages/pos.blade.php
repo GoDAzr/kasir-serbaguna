@@ -10,7 +10,10 @@
     <section class="pos-products">
         <div class="pos-search">
             <input type="search" id="posSearch" placeholder="Cari produk / SKU..." autocomplete="off">
-            <input type="text" id="posScan" placeholder="Scan barcode lalu Enter" autocomplete="off" inputmode="numeric" {{ request('scan') ? 'autofocus' : '' }}>
+            <div class="scan-row">
+                <input type="text" id="posScan" placeholder="Scan barcode lalu Enter" autocomplete="off" inputmode="numeric" {{ request('scan') ? 'autofocus' : '' }}>
+                <button type="button" class="btn ghost" id="posCam" title="Scan pakai kamera" aria-label="Scan pakai kamera"><svg class="ico" style="width:20px;height:20px"><use href="#i-scan"/></svg>Kamera</button>
+            </div>
         </div>
         <div class="chips" id="posCats"></div>
         <div class="pgrid" id="posGrid"></div>
@@ -89,10 +92,21 @@
     </div>
 </div>
 
+<div class="modal" id="camModal" hidden>
+    <div class="modal-box">
+        <h3>Scan barcode</h3>
+        <div class="cam-box"><video id="camVideo" playsinline muted></video><i class="cam-line"></i></div>
+        <p class="muted center" id="camMsg">Membuka kamera...</p>
+        <button class="btn ghost" type="button" id="camClose">Tutup</button>
+    </div>
+</div>
+
 @php $posData = ['items' => $items, 'taxes' => $taxes, 'canPrice' => $canPrice, 'url' => route('pos.checkout')]; @endphp
 <script type="application/json" id="posData">{!! json_encode($posData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) !!}</script>
 @endsection
 
 @push('scripts')
+    <script>window.ZXING_URL = "{{ asset('js/vendor/zxing.min.js') }}";</script>
+    <script src="{{ asset('js/dashboard/scan.js') }}"></script>
     <script src="{{ asset('js/dashboard/pos.js') }}"></script>
 @endpush

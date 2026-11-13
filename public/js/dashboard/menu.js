@@ -76,9 +76,10 @@
                     return;
                 }
                 if (e.target.closest('[data-toggle]')) {
-                    // Panah >: hanya buka / tutup isi kategori, menu samping tidak menutup
+                    // Panah >: buka / tutup isi kategori, lalu menu menutup (kalau tidak dikunci)
                     stack = (stack[1] === gid) ? ['root'] : ['root', gid];
                     render('fwd');
+                    after();
                     return;
                 }
                 // Klik nama kategori atau salah satu isinya: pilih, lalu menu menutup (kalau tidak dikunci)

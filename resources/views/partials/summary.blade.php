@@ -20,27 +20,50 @@
         <a class="stat g-merah" href="{{ route('notifikasi') }}"><small>Stok menipis</small><b>{{ $sum['low'] }}</b></a>
     </div>
 
-    <div class="card card-pad" id="grafik">
-        <h3 class="sub-title">Grafik penjualan</h3>
-        @if (count($chart))
-            @php $max = max(1, max($chart)); @endphp
-            <div class="bars">
-                @foreach (array_slice($chart, -31, null, true) as $lbl => $val)
-                    <div class="bar" title="{{ $lbl }}: {{ \App\Support\Fmt::money($val) }}"><i style="height:{{ max(3, round($val / $max * 100)) }}%"></i><span>{{ $lbl }}</span></div>
-                @endforeach
+    {{-- Grafik penjualan: pilih jenis grafik, tombol > untuk buka / tutup, panjang -> scroll di tempat --}}
+    <div class="card card-pad fold is-open" id="grafik" data-fold="grafik"
+         data-chart="{{ json_encode(collect($chart)->map(fn ($v, $k) => [(string) $k, (float) $v])->values()) }}">
+        <div class="fold-head">
+            <button type="button" class="fold-btn" aria-expanded="true" aria-label="Buka / tutup grafik"><svg class="ico"><use href="#i-chev"/></svg></button>
+            <h3 class="sub-title">Grafik penjualan</h3>
+            <div class="chart-tabs">
+                <button type="button" class="chip-btn on" data-type="bar">Batang</button>
+                <button type="button" class="chip-btn" data-type="line">Garis</button>
+                <button type="button" class="chip-btn" data-type="area">Area</button>
+                <button type="button" class="chip-btn" data-type="donut">Donat</button>
             </div>
-        @else
-            <p class="muted center">Belum ada penjualan pada periode ini.</p>
-        @endif
+        </div>
+        <div class="fold-body">
+            @if (count($chart))
+                <div class="chart-host"></div>
+            @else
+                <p class="muted center">Belum ada penjualan pada periode ini.</p>
+            @endif
+        </div>
     </div>
 
-    <div class="card card-pad" id="aktivitas">
-        <h3 class="sub-title">Aktivitas terbaru</h3>
-        @forelse ($logs as $l)
-            <p class="nrow"><b>{{ $l->user_name ?? 'Sistem' }}</b> <span class="badge {{ \App\Support\Fmt::BADGE[$l->action] ?? 'gray' }}">{{ $l->action }}</span> {{ $l->menu }}
-                <small class="muted">{{ \Illuminate\Support\Carbon::parse($l->created_at)->diffForHumans() }}</small></p>
-        @empty
-            <p class="muted center">Belum ada aktivitas.</p>
-        @endforelse
+    {{-- Aktivitas terbaru: tombol > untuk buka / tutup, cari + filter tanggal, scroll di tempat --}}
+    <div class="card card-pad fold is-open" id="aktivitas" data-fold="aktivitas">
+        <div class="fold-head">
+            <button type="button" class="fold-btn" aria-expanded="true" aria-label="Buka / tutup aktivitas"><svg class="ico"><use href="#i-chev"/></svg></button>
+            <h3 class="sub-title">Aktivitas terbaru</h3>
+            <small class="muted act-count" id="actCount"></small>
+        </div>
+        <div class="fold-body">
+            <div class="act-filter">
+                <input type="search" id="actQ" placeholder="Cari aktivitas..." autocomplete="off">
+                <label class="inl">Dari <input type="date" id="actFrom"></label>
+                <label class="inl">Sampai <input type="date" id="actTo"></label>
+                <button type="button" class="btn ghost sm" id="actReset">Reset</button>
+            </div>
+            <div class="fold-scroll">
+                @foreach ($logs as $l)
+                    @php $at = \Illuminate\Support\Carbon::parse($l->created_at); @endphp
+                    <p class="nrow" data-date="{{ $at->toDateString() }}" data-text="{{ mb_strtolower(($l->user_name ?? 'Sistem') . ' ' . $l->action . ' ' . $l->menu) }}"><b>{{ $l->user_name ?? 'Sistem' }}</b> <span class="badge {{ \App\Support\Fmt::BADGE[$l->action] ?? 'gray' }}">{{ $l->action }}</span> {{ $l->menu }}
+                        <small class="muted" title="{{ $at->format('d/m/Y H:i') }}">{{ $at->format('d/m H:i') }} &middot; {{ $at->locale('id')->diffForHumans() }}</small></p>
+                @endforeach
+                <p class="muted center" id="actEmpty" @if ($logs->count()) hidden @endif>{{ $logs->count() ? 'Tidak ada aktivitas yang cocok.' : 'Belum ada aktivitas.' }}</p>
+            </div>
+        </div>
     </div>
 </section>
