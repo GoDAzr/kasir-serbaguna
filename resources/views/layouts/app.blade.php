@@ -18,8 +18,10 @@
     @endforeach
     <script>window.DASH_URL = "{{ route('dashboard') }}";</script>
     @stack('head')
+    @include('partials.appearance-head')
 </head>
 <body>
+    @include('partials.appearance-bg')
     @include('partials.icons')
 
     <div class="app" id="app">
@@ -49,6 +51,7 @@
         <script src="{{ asset('js/dashboard/' . $js . '.js') }}"></script>
     @endforeach
     <script src="{{ asset('js/dashboard/pages.js') }}"></script>
+    <script src="{{ asset('js/dashboard/theme.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

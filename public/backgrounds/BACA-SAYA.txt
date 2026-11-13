@@ -1,0 +1,3 @@
+Taruh gambar background (jpg/png/webp) di folder ini.
+Nama file jadi nama pilihan di Pengaturan > Tampilan.
+Contoh: langit-senja.jpg -> "Langit Senja"

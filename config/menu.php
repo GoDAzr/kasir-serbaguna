@@ -420,6 +420,16 @@ return [
                     null,
                 ],
                 [
+                    'Tampilan',
+                    'star',
+                    [
+                        ['Mode Gelap / Terang', 'Pilih tema aplikasi', 'star', '/akun/tampilan'],
+                        ['Ganti Background', 'Polos, malam bintang, atau foto sendiri', 'star', '/akun/tampilan'],
+                    ],
+                    null,
+                    null,
+                ],
+                [
                     'Manajemen Pengguna',
                     'users',
                     [

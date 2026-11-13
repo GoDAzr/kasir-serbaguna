@@ -7,7 +7,7 @@
     <title>{{ ($splash ?? false) ? 'Serbaguna UMKM' : 'Login - Serbaguna UMKM' }}</title>
 
     {{-- Ikon tab browser --}}
-    <link rel="icon" type="image/png" href="{{ asset('logo1.jpeg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('logo4.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -799,7 +799,7 @@
 
             <div class="splash-center">
                 <div class="logo-wrap">
-                    <img class="splash-logo" src="{{ asset('images/logo1.jpeg') }}" alt="Serbaguna UMKM - Satu Platform, Semua Kebutuhan Usaha">
+                    <img class="splash-logo" src="{{ asset('images/logo4.png') }}" alt="Serbaguna UMKM - Satu Platform, Semua Kebutuhan Usaha">
                 </div>
                 <div class="loader" aria-hidden="true"><i></i></div>
                 <div class="dots" aria-hidden="true"><b></b><b></b><b></b><b></b></div>

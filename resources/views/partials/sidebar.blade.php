@@ -1,7 +1,7 @@
 {{-- Menu samping: logo, gembok, Dashboard, menu bertingkat, akun --}}
 <aside class="sidebar" id="sidebar" aria-label="Menu utama">
     <div class="sidebar-head">
-        <img src="{{ asset('images/logo1.jpeg') }}" alt="Serbaguna UMKM">
+        <img src="{{ asset('images/logo4.png') }}" alt="Serbaguna UMKM">
         <div class="head-btns">
             <button class="menu-lock" id="menuLock" type="button" aria-pressed="false" title="Menu menutup otomatis setelah dipilih (klik untuk kunci)">
                 <svg class="ico"><use href="#i-unlock"/></svg>

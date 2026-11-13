@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/akun/password', [PagesController::class, 'passwordSave']);
     Route::get('/akun/pin', [PagesController::class, 'pin'])->name('akun.pin');
     Route::post('/akun/pin', [PagesController::class, 'pinSave']);
+    Route::get('/akun/tampilan', [\App\Http\Controllers\AppearanceController::class, 'show'])->name('akun.tampilan');
+    Route::post('/akun/tampilan', [\App\Http\Controllers\AppearanceController::class, 'save']);
+    Route::post('/akun/tampilan/tema', [\App\Http\Controllers\AppearanceController::class, 'quickTheme'])->name('akun.tema');
     Route::get('/notifikasi', [PagesController::class, 'notifikasi'])->name('notifikasi');
 
     // Kasir / POS

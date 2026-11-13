@@ -17,8 +17,10 @@
     @foreach (['base', 'sidebar', 'hero', 'toggle', 'content', 'menu', 'desktop', 'pages'] as $css)
         <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}">
     @endforeach
+    @include('partials.appearance-head')
 </head>
 <body>
+    @include('partials.appearance-bg')
     @include('partials.icons')
 
     <div class="app" id="app">
@@ -35,7 +37,7 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     {{-- Perilaku: public/js/dashboard/*.js --}}
-    @foreach (['sidebar', 'topbar', 'menu', 'toast', 'clock', 'summary'] as $js)
+    @foreach (['sidebar', 'topbar', 'menu', 'toast', 'clock', 'summary', 'theme'] as $js)
         <script src="{{ asset('js/dashboard/' . $js . '.js') }}"></script>
     @endforeach
 </body>
