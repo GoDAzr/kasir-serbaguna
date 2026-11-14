@@ -45,7 +45,57 @@ class PosController extends Controller
             'branches' => Tenant::branches(), 'shifts' => self::SHIFTS, 'types' => self::TYPES,
             'canPrice' => Tenant::isAdmin(),
             'canDisc' => Tenant::can('pos_diskon'),
+            'canNewProduct' => Tenant::can('produk_cepat') || Tenant::can('produk'),
         ]);
+    }
+
+    /**
+     * Daftarkan produk baru langsung dari kasir (barcode hasil scan belum terdaftar).
+     * Hanya untuk yang diizinkan owner (izin "produk_cepat") atau yang memang boleh mengelola produk.
+     */
+    public function quickProduct(Request $r)
+    {
+        abort_unless(Tenant::can('produk_cepat') || Tenant::can('produk'), 403, 'Anda belum diizinkan mendaftarkan produk baru. Minta owner mengaktifkannya.');
+
+        $data = $r->validate([
+            'barcode' => 'required|string|max:50',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:1|max:1000000',
+            'branch_id' => 'nullable|integer',
+        ], [
+            'name.required' => 'Nama produk wajib diisi.',
+            'price.required' => 'Harga jual wajib diisi.',
+            'stock.required' => 'Jumlah stok wajib diisi (minimal 1).',
+            'stock.min' => 'Jumlah stok minimal 1.',
+        ]);
+
+        if (Product::withTrashed()->where('barcode', $data['barcode'])->exists()) {
+            throw ValidationException::withMessages(['barcode' => 'Barcode ini sudah terdaftar. Cari produknya di daftar produk.']);
+        }
+        $branches = Tenant::branches();
+        $branchId = isset($data['branch_id']) && isset($branches[$data['branch_id']]) ? (int) $data['branch_id'] : null;
+
+        $p = DB::transaction(function () use ($data, $branchId) {
+            $p = Product::create([
+                'type' => 'barang', 'name' => trim($data['name']), 'barcode' => $data['barcode'],
+                'price' => $data['price'], 'cost_price' => $data['cost_price'] ?? 0,
+                'stock' => 0, 'min_stock' => 0, 'unit' => 'pcs', 'is_active' => true,
+            ]);
+            StockService::move($p->id, StockService::defaultWarehouse($branchId), (int) $data['stock'], 'in', [
+                'note' => 'Produk didaftarkan dari kasir (scan barcode)', 'reference' => $data['barcode'], 'source' => 'kasir',
+            ]);
+
+            return $p->fresh();
+        });
+        Tenant::audit('tambah', 'Produk (dari kasir)', ['id' => $p->id, 'name' => $p->name, 'barcode' => $p->barcode]);
+
+        return response()->json(['ok' => true, 'item' => [
+            'id' => $p->id, 'name' => $p->name, 'price' => (float) $p->price, 'type' => 'barang',
+            'sku' => null, 'barcode' => $p->barcode, 'stock' => (int) $p->stock, 'cat' => null, 'img' => null,
+            'uses_stock' => true, 'vars' => [], 'bundle' => 0,
+        ]]);
     }
 
     public function checkout(Request $r)

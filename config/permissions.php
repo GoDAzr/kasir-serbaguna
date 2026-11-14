@@ -22,6 +22,7 @@ return [
         // Izin rinci untuk kasir (dipakai juga di halaman Akses Kasir)
         'pos_diskon' => 'Kasir: boleh memberi diskon',
         'pos_piutang' => 'Kasir: boleh jual belum lunas (piutang)',
+        'produk_cepat' => 'Kasir: boleh daftarkan produk baru dari hasil scan',
         'transaksi_batal' => 'Boleh membatalkan transaksi',
         'retur' => 'Boleh retur penjualan',
         'lihat_omzet' => 'Boleh melihat total penjualan di beranda kasir',
@@ -35,6 +36,6 @@ return [
         'owner' => ['Owner', 'Akses penuh ke seluruh usaha', ['*'], true],
         'admin' => ['Admin', 'Mengelola toko', ['*'], true],
         'kasir' => ['Kasir', 'Hanya transaksi kasir', ['dashboard', 'pos', 'transaksi', 'pelanggan'], false],
-        'supervisor' => ['Supervisor', 'Memantau dan menyetujui', ['dashboard', 'pos', 'transaksi', 'produk', 'pelanggan', 'inventori', 'laporan', 'pos_diskon', 'pos_piutang', 'transaksi_batal', 'retur', 'lihat_omzet'], true],
+        'supervisor' => ['Supervisor', 'Memantau dan menyetujui', ['dashboard', 'pos', 'transaksi', 'produk', 'pelanggan', 'inventori', 'laporan', 'pos_diskon', 'pos_piutang', 'produk_cepat', 'transaksi_batal', 'retur', 'lihat_omzet'], true],
     ],
 ];

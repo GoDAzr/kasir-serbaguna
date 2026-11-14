@@ -3,6 +3,7 @@
     var DATA = JSON.parse(document.getElementById('posData').textContent);
     var $ = function (id) { return document.getElementById(id); };
     var rp = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
+    var M = window.Dashboard;   // pembantu format uang (money.js)
     var cart = [];
     var cat = '';
 
@@ -67,7 +68,7 @@
     function totals() {
         var sub = 0;
         cart.forEach(function (l) { sub += lineTotal(l); });
-        var disc = Math.min(parseFloat($('fDisc').value) || 0, sub);
+        var disc = Math.min(M.moneyNum($('fDisc').value), sub);
         var base = sub - disc, tax = 0;
         DATA.taxes.forEach(function (t) {
             var part = base;
@@ -89,8 +90,8 @@
             box.innerHTML = cart.map(function (l, i) {
                 return '<div class="cl" data-i="' + i + '"><div class="cl-top"><b>' + esc(l.name) + '</b><button type="button" class="x" data-act="del" aria-label="Hapus">&times;</button></div>' +
                     '<div class="cl-row"><div class="qty"><button type="button" data-act="minus">&minus;</button><input type="number" min="1" value="' + l.qty + '" data-f="qty"><button type="button" data-act="plus">+</button></div>' +
-                    '<label>Harga<input type="number" min="0" step="any" value="' + l.price + '" data-f="price"' + (DATA.canPrice ? '' : ' readonly') + '></label>' +
-                    (DATA.canDisc === false ? '' : '<label>Diskon<input type="number" min="0" step="any" value="' + l.disc + '" data-f="disc"></label>') +
+                    '<label>Harga<input type="text" inputmode="numeric" data-money data-money-ready value="' + M.moneyText(l.price) + '" data-f="price"' + (DATA.canPrice ? '' : ' readonly') + '></label>' +
+                    (DATA.canDisc === false ? '' : '<label>Diskon<input type="text" inputmode="numeric" data-money data-money-ready value="' + M.moneyText(l.disc) + '" data-f="disc"></label>') +
                     '<b class="lt">' + rp(lineTotal(l)) + '</b></div>' +
                     '<input type="text" class="cl-note" placeholder="Catatan produk" value="' + esc(l.note) + '" data-f="note" maxlength="255"></div>';
             }).join('');
@@ -115,15 +116,15 @@
         $('wrapRecv').style.display = cash ? '' : 'none';
         $('wrapRef').style.display = cash ? 'none' : '';
         $('wrapProof').style.display = cash ? 'none' : '';
-        var amt = parseFloat($('fAmount').value) || 0;
-        var recv = parseFloat($('fRecv').value) || 0;
+        var amt = M.moneyNum($('fAmount').value);
+        var recv = M.moneyNum($('fRecv').value);
         $('tChange').textContent = rp(cash ? Math.max(0, recv - amt) : 0);
         $('tStatus').textContent = !cart.length ? '-' : (amt + 0.001 >= t.total ? 'Lunas' : (amt > 0 ? 'Sebagian (jadi piutang)' : 'Belum lunas (jadi piutang)'));
     }
 
     function fillAmount() {
         var t = totals();
-        $('fAmount').value = t.total ? Math.round(t.total * 100) / 100 : '';
+        M.setMoney($('fAmount'), t.total || '');
         if (isCash() && !$('fRecv').dataset.touched) { $('fRecv').value = $('fAmount').value; }
         payUi();
     }
@@ -143,7 +144,7 @@
         e.preventDefault();
         var code = this.value.trim(); if (!code) { return; }
         var hit = scanCode(code);
-        window.Dashboard && Dashboard.toast(hit ? hit.name + ' ditambahkan' : 'Barcode ' + code + ' tidak ditemukan');
+        if (hit) { M.toast && M.toast(hit.name + ' ditambahkan'); } else { notFound(code); }
         this.value = '';
     });
 
@@ -157,12 +158,66 @@
         return hit;
     }
 
+    // ---------- Barcode belum terdaftar: daftarkan sebagai produk baru ----------
+    function notFound(code) {
+        $('newProdModal').hidden = false;
+        if (!DATA.canNewProduct) { $('npCodeOnly').textContent = code; return; }
+        $('npBarcode').value = code;
+        ['npName', 'npPrice', 'npCost'].forEach(function (id) { $(id).value = ''; });
+        $('npStock').value = '1';
+        $('npErr').hidden = true;
+        $('npName').focus();
+    }
+    function closeNew() { $('newProdModal').hidden = true; $('posScan').focus(); }
+    $('npCancel').addEventListener('click', closeNew);
+    $('newProdModal').addEventListener('click', function (e) { if (e.target === this) { closeNew(); } });
+    if ($('newProdForm')) {
+        $('newProdForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var msgs = [];
+            if (!$('npName').value.trim()) { msgs.push('Nama produk wajib diisi.'); }
+            if ($('npPrice').value === '') { msgs.push('Harga jual wajib diisi.'); }
+            if (!(parseInt($('npStock').value, 10) >= 1)) { msgs.push('Jumlah stok minimal 1.'); }
+            var box = $('npErr');
+            function show(m) { box.hidden = !m.length; box.innerHTML = m.length ? '<ul>' + m.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : ''; }
+            if (msgs.length) { return show(msgs); }
+            show([]);
+            var btn = $('npSave'); btn.disabled = true;
+            var fd = new FormData();
+            fd.append('barcode', $('npBarcode').value);
+            fd.append('name', $('npName').value.trim());
+            fd.append('price', M.moneyNum($('npPrice').value));
+            if ($('npCost').value !== '') { fd.append('cost_price', M.moneyNum($('npCost').value)); }
+            fd.append('stock', parseInt($('npStock').value, 10));
+            fd.append('branch_id', $('fBranch').value);
+            fetch(DATA.newUrl, { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' } })
+                .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+                .then(function (x) {
+                    btn.disabled = false;
+                    if (!x.ok) {
+                        var m = [];
+                        if (x.j.errors) { Object.keys(x.j.errors).forEach(function (k) { m = m.concat(x.j.errors[k]); }); } else { m.push(x.j.message || 'Produk gagal disimpan.'); }
+                        return show(m);
+                    }
+                    DATA.items.push(x.j.item);
+                    cats(); grid();
+                    add(x.j.item, null); fillAmount();
+                    $('newProdModal').hidden = true;
+                    M.toast && M.toast(x.j.item.name + ' didaftarkan dan ditambahkan');
+                    $('posScan').focus();
+                })
+                .catch(function () { btn.disabled = false; show(['Koneksi bermasalah. Coba lagi.']); });
+        });
+    }
+
     // ---------- Scan pakai kamera ----------
     function openCam() {
         $('camModal').hidden = false;
         Dashboard.scanCamera($('camVideo'), function (code) {
             var hit = scanCode(code);
-            $('camMsg').textContent = hit ? hit.name + ' ditambahkan' : 'Barcode ' + code + ' tidak ditemukan';
+            if (hit) { $('camMsg').textContent = hit.name + ' ditambahkan'; return; }
+            closeCam();       // hentikan kamera supaya tidak membaca barcode yang sama berulang
+            notFound(code);
         }, function (msg) { $('camMsg').textContent = msg; });
     }
     function closeCam() { Dashboard.stopCamera(); $('camModal').hidden = true; $('posScan').focus(); }
@@ -189,7 +244,8 @@
     $('cartLines').addEventListener('change', function (e) {
         var f = e.target.dataset.f; if (!f) { return; }
         var l = cart[parseInt(e.target.closest('.cl').dataset.i, 10)];
-        l[f] = f === 'note' ? e.target.value : Math.max(f === 'qty' ? 1 : 0, parseFloat(e.target.value) || 0);
+        var v = (f === 'price' || f === 'disc') ? M.moneyNum(e.target.value) : (parseFloat(e.target.value) || 0);
+        l[f] = f === 'note' ? e.target.value : Math.max(f === 'qty' ? 1 : 0, v);
         draw(); fillAmount();
     });
 
@@ -219,10 +275,10 @@
         fd.append('type', $('fType').value);
         if ($('fCustomer').value) { fd.append('customer_id', $('fCustomer').value); }
         fd.append('note', $('fNote').value);
-        fd.append('discount', $('fDisc').value || 0);
+        fd.append('discount', M.moneyNum($('fDisc').value));
         fd.append('payment_method', $('fMethod').value);
-        fd.append('amount', amt);
-        if (isCash()) { fd.append('received', $('fRecv').value); }
+        fd.append('amount', M.moneyNum(amt));
+        if (isCash()) { fd.append('received', M.moneyNum($('fRecv').value)); }
         fd.append('reference', $('fRef').value);
         fd.append('receipt_note', $('fReceiptNote').value);
         if ($('fProof').files[0]) { fd.append('proof', $('fProof').files[0]); }

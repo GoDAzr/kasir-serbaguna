@@ -59,7 +59,7 @@
             @break
 
         @case('money')
-            <input type="number" id="{{ $id }}" name="{{ $name }}" value="{{ $val }}" step="any" min="0" inputmode="decimal">
+            <input type="text" id="{{ $id }}" name="{{ $name }}" value="{{ $val }}" data-money inputmode="numeric" autocomplete="off" placeholder="0">
             @break
 
         @case('number')

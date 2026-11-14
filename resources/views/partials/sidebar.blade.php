@@ -19,7 +19,7 @@
         @include('partials.menu-groups', ['variant' => 'side'])
 
         <div class="nav-label">Akun</div>
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}" data-confirm="Yakin ingin keluar dari akun ini?" data-confirm-yes="Ya, keluar" data-confirm-no="Tidak" data-confirm-title="Keluar">
             @csrf
             <button type="submit" class="nav-btn"><span class="chip c-out"><svg class="ico"><use href="#i-logout"/></svg></span>Keluar</button>
         </form>

@@ -20,6 +20,7 @@ class CashierAccessController extends Controller
     public const ACTIONS = [
         'pos_diskon' => ['Memberi diskon', 'Boleh mengisi diskon per barang dan diskon transaksi di kasir'],
         'pos_piutang' => ['Jual belum lunas (piutang)', 'Boleh menyimpan transaksi yang pembayarannya belum penuh'],
+        'produk_cepat' => ['Mendaftarkan produk baru dari kasir', 'Jika barcode hasil scan belum terdaftar, kasir boleh langsung mengisi nama dan harga lalu menyimpannya'],
         'transaksi_batal' => ['Membatalkan transaksi', 'Boleh membatalkan transaksi yang sudah selesai'],
         'retur' => ['Retur penjualan', 'Boleh mencatat pengembalian barang dari pembeli'],
         'lihat_omzet' => ['Melihat total penjualan', 'Beranda kasir menampilkan jumlah rupiah penjualan hari ini'],

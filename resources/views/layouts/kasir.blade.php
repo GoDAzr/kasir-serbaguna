@@ -28,7 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     @foreach (['base', 'hero', 'toggle', 'content', 'menu', 'pages'] as $css)
-        <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}?v={{ @filemtime(public_path('css/dashboard/' . $css . '.css')) }}">
     @endforeach
     <script>window.DASH_URL = "{{ route('kasir') }}";</script>
     @stack('head')
@@ -54,7 +54,7 @@
             <div class="k-user">
                 <div class="k-who"><b>{{ $T::user()->name }}</b><small>{{ $T::role()?->name ?? 'Kasir' }}</small></div>
                 @include('partials.settings-menu')
-                <form method="POST" action="{{ route('logout') }}" style="display:contents">
+                <form method="POST" action="{{ route('logout') }}" data-confirm="Yakin ingin keluar dari akun ini?" data-confirm-yes="Ya, keluar" data-confirm-no="Tidak" data-confirm-title="Keluar" style="display:contents">
                     @csrf
                     <button class="icon-btn btn-out" type="submit" aria-label="Keluar"><svg class="ico"><use href="#i-logout"/></svg></button>
                 </form>
@@ -83,11 +83,12 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-    <script src="{{ asset('js/dashboard/toast.js') }}"></script>
-    <script src="{{ asset('js/dashboard/pages.js') }}"></script>
-    <script src="{{ asset('js/dashboard/theme.js') }}"></script>
-    <script src="{{ asset('js/dashboard/clock.js') }}"></script>
-    <script src="{{ asset('js/dashboard/kasir.js') }}"></script>
+    <script src="{{ asset('js/dashboard/toast.js') }}?v={{ @filemtime(public_path('js/dashboard/toast.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/money.js') }}?v={{ @filemtime(public_path('js/dashboard/money.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/pages.js') }}?v={{ @filemtime(public_path('js/dashboard/pages.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/theme.js') }}?v={{ @filemtime(public_path('js/dashboard/theme.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/clock.js') }}?v={{ @filemtime(public_path('js/dashboard/clock.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/kasir.js') }}?v={{ @filemtime(public_path('js/dashboard/kasir.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>

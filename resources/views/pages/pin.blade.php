@@ -3,6 +3,16 @@
 @section('subtitle', $hasPin ? 'PIN sudah diatur' : 'Anda belum punya PIN')
 @section('own_errors', '1')
 @section('content')
+<div class="panel narrow ak-intro-pin">
+    <h3 class="sub-title" style="margin-top:0">Apa gunanya PIN?</h3>
+    <p style="margin:0 0 8px">PIN adalah kode rahasia <b>4-6 angka</b> milik Anda. Dipakai sebagai <b>konfirmasi untuk tindakan penting</b>:</p>
+    <ul style="margin:0 0 8px;padding-left:20px">
+        <li>membatalkan transaksi</li>
+        <li>memproses retur penjualan</li>
+    </ul>
+    <p class="muted" style="margin:0">Jadi kalau layar kasir ditinggal dan dipegang orang lain, mereka tidak bisa membatalkan transaksi tanpa PIN Anda.
+        PIN <b>bukan</b> untuk masuk ke aplikasi (masuk tetap pakai email dan password). Belum punya PIN = tindakan di atas tidak meminta konfirmasi.</p>
+</div>
 <form method="POST" class="panel form narrow" novalidate>
     @csrf
     @if ($hasPin)

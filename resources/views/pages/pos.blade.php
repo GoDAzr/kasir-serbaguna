@@ -43,7 +43,7 @@
 
             <div class="totals">
                 <div><span>Subtotal</span><b id="tSub">Rp 0</b></div>
-                <div class="inl-field" @unless ($canDisc ?? true) hidden @endunless><span>Diskon transaksi (Rp)</span><input type="number" id="fDisc" min="0" step="any" value="0"></div>
+                <div class="inl-field" @unless ($canDisc ?? true) hidden @endunless><span>Diskon transaksi (Rp)</span><input type="text" id="fDisc" data-money inputmode="numeric" autocomplete="off" value="0"></div>
                 <div><span>Pajak / biaya layanan</span><b id="tTax">Rp 0</b></div>
                 <div class="grand"><span>Total</span><b id="tTotal">Rp 0</b></div>
             </div>
@@ -54,8 +54,8 @@
             <div class="grid g2">
                 <div class="fld full"><label>Metode pembayaran<i class="req">*</i></label>
                     <select id="fMethod">@foreach ($methods as $m)<option value="{{ $m->code }}" data-type="{{ $m->type }}">{{ $m->name }}</option>@endforeach</select></div>
-                <div class="fld"><label>Nominal dibayar<i class="req">*</i></label><input type="number" id="fAmount" min="0" step="any"></div>
-                <div class="fld" id="wrapRecv"><label>Uang diterima<i class="req">*</i></label><input type="number" id="fRecv" min="0" step="any"></div>
+                <div class="fld"><label>Nominal dibayar<i class="req">*</i></label><input type="text" id="fAmount" data-money inputmode="numeric" autocomplete="off" placeholder="0"></div>
+                <div class="fld" id="wrapRecv"><label>Uang diterima<i class="req">*</i></label><input type="text" id="fRecv" data-money inputmode="numeric" autocomplete="off" placeholder="0"></div>
                 <div class="fld" id="wrapRef"><label>Referensi pembayaran</label><input type="text" id="fRef" maxlength="255"></div>
                 <div class="fld" id="wrapProof"><label>Bukti pembayaran</label><input type="file" id="fProof" accept=".jpg,.jpeg,.png,.webp,.pdf"></div>
                 <div class="fld full"><label>Catatan struk</label><input type="text" id="fReceiptNote" maxlength="500"></div>
@@ -92,6 +92,34 @@
     </div>
 </div>
 
+{{-- Barcode belum terdaftar: daftarkan produk baru (hanya bila diizinkan owner) --}}
+<div class="modal" id="newProdModal" hidden>
+    <div class="modal-box">
+        <h3>Barcode belum terdaftar</h3>
+        @if ($canNewProduct ?? false)
+            <p class="muted" style="margin:0">Daftarkan sebagai produk baru, lalu otomatis masuk ke keranjang.</p>
+            <form id="newProdForm" class="np-form" novalidate>
+                <div class="fld"><label>Barcode</label><input type="text" id="npBarcode" readonly></div>
+                <div class="fld"><label>Nama produk<i class="req">*</i></label><input type="text" id="npName" maxlength="255" autocomplete="off"></div>
+                <div class="np-two">
+                    <div class="fld"><label>Harga jual<i class="req">*</i></label><input type="text" id="npPrice" data-money inputmode="numeric" autocomplete="off" placeholder="0"></div>
+                    <div class="fld"><label>Harga modal</label><input type="text" id="npCost" data-money inputmode="numeric" autocomplete="off" placeholder="0"></div>
+                </div>
+                <div class="fld"><label>Jumlah stok saat ini<i class="req">*</i></label><input type="text" id="npStock" inputmode="numeric" autocomplete="off" value="1"></div>
+                <div id="npErr" class="flash bad" hidden></div>
+                <div class="actions">
+                    <button type="button" class="btn ghost" id="npCancel">Batal</button>
+                    <button type="submit" class="btn primary" id="npSave">Simpan &amp; tambahkan</button>
+                </div>
+            </form>
+        @else
+            <p>Barcode <b id="npCodeOnly"></b> belum ada di daftar produk.</p>
+            <p class="muted" style="margin:0">Akun Anda belum diizinkan mendaftarkan produk baru. Minta owner untuk mendaftarkannya atau mengaktifkan izin <b>"Mendaftarkan produk baru dari kasir"</b> di menu Akses Kasir.</p>
+            <div class="actions"><button type="button" class="btn primary" id="npCancel">Mengerti</button></div>
+        @endif
+    </div>
+</div>
+
 <div class="modal" id="camModal" hidden>
     <div class="modal-box">
         <h3>Scan barcode</h3>
@@ -101,12 +129,12 @@
     </div>
 </div>
 
-@php $posData = ['items' => $items, 'taxes' => $taxes, 'canPrice' => $canPrice, 'canDisc' => $canDisc ?? true, 'url' => route('pos.checkout')]; @endphp
+@php $posData = ['items' => $items, 'taxes' => $taxes, 'canPrice' => $canPrice, 'canDisc' => $canDisc ?? true, 'canNewProduct' => $canNewProduct ?? false, 'url' => route('pos.checkout'), 'newUrl' => route('pos.produk')]; @endphp
 <script type="application/json" id="posData">{!! json_encode($posData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) !!}</script>
 @endsection
 
 @push('scripts')
     <script>window.ZXING_URL = "{{ asset('js/vendor/zxing.min.js') }}";</script>
-    <script src="{{ asset('js/dashboard/scan.js') }}"></script>
-    <script src="{{ asset('js/dashboard/pos.js') }}"></script>
+    <script src="{{ asset('js/dashboard/scan.js') }}?v={{ @filemtime(public_path('js/dashboard/scan.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/pos.js') }}?v={{ @filemtime(public_path('js/dashboard/pos.js')) }}"></script>
 @endpush

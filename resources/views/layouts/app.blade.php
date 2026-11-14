@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     @foreach (['base', 'sidebar', 'hero', 'toggle', 'content', 'menu', 'desktop', 'pages'] as $css)
-        <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/dashboard/' . $css . '.css') }}?v={{ @filemtime(public_path('css/dashboard/' . $css . '.css')) }}">
     @endforeach
     <script>window.DASH_URL = "{{ route('dashboard') }}";</script>
     @stack('head')
@@ -52,10 +52,11 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     @foreach (['sidebar', 'topbar', 'menu', 'toast'] as $js)
-        <script src="{{ asset('js/dashboard/' . $js . '.js') }}"></script>
+        <script src="{{ asset('js/dashboard/' . $js . '.js') }}?v={{ @filemtime(public_path('js/dashboard/' . $js . '.js')) }}"></script>
     @endforeach
-    <script src="{{ asset('js/dashboard/pages.js') }}"></script>
-    <script src="{{ asset('js/dashboard/theme.js') }}"></script>
+    <script src="{{ asset('js/dashboard/money.js') }}?v={{ @filemtime(public_path('js/dashboard/money.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/pages.js') }}?v={{ @filemtime(public_path('js/dashboard/pages.js')) }}"></script>
+    <script src="{{ asset('js/dashboard/theme.js') }}?v={{ @filemtime(public_path('js/dashboard/theme.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>

@@ -17,7 +17,7 @@
                 </div>
 
                 @include('partials.settings-menu')
-                <form method="POST" action="{{ route('logout') }}" style="display:contents">
+                <form method="POST" action="{{ route('logout') }}" data-confirm="Yakin ingin keluar dari akun ini?" data-confirm-yes="Ya, keluar" data-confirm-no="Tidak" data-confirm-title="Keluar" style="display:contents">
                     @csrf
                     <button class="icon-btn btn-out" type="submit" aria-label="Keluar">
                         <svg class="ico"><use href="#i-logout"/></svg>

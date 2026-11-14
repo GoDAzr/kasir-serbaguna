@@ -8,6 +8,7 @@ use App\Support\ModuleHooks;
 use App\Support\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -74,8 +75,18 @@ class TransaksiController extends Controller
     }
 
     /** Pembatalan: transaksi yang sudah selesai tidak diedit, hanya dibatalkan dengan alasan. */
+    /** Bila pengguna sudah punya PIN, tindakan penting (batal / retur) meminta PIN-nya. */
+    private function confirmPin(Request $r): void
+    {
+        $u = Tenant::user();
+        if ($u && $u->pin && ! Hash::check((string) $r->input('pin'), $u->pin)) {
+            throw ValidationException::withMessages(['pin' => 'PIN salah. Masukkan PIN Anda untuk melanjutkan.']);
+        }
+    }
+
     public function batal(Request $r, int $id)
     {
+        $this->confirmPin($r);
         $data = $r->validate([
             'cancel_reason' => 'required|string|max:255',
             'cancel_note' => 'nullable|string|max:1000',
@@ -159,6 +170,7 @@ class TransaksiController extends Controller
 
     public function returStore(Request $r)
     {
+        $this->confirmPin($r);
         $data = $r->validate([
             'transaction_id' => 'required|integer',
             'refund_method' => 'nullable|string',

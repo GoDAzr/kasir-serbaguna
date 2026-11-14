@@ -253,3 +253,16 @@ a.stat:hover { background: var(--soft, var(--bg)); }
 .act-filter input:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
 #actQ { flex: 1; min-width: 160px; }
 .nrow[hidden] { display: none; }
+
+/* Dialog konfirmasi Ya / Tidak (keluar, hapus, batal) */
+.cf-ico { width: 60px; height: 60px; margin: 0 auto; border-radius: 50%; background: #FFF4CC; color: #8A6A00; display: grid; place-items: center; font-size: 30px; font-weight: 800; }
+#confirmModal .actions { display: flex; gap: 10px; justify-content: center; }
+#confirmModal .actions .btn { min-width: 110px; }
+html[data-theme="dark"] .cf-ico { background: rgba(255, 213, 0, .18); color: #FFD500; }
+
+/* Daftarkan produk baru dari kasir */
+.np-form { display: grid; gap: 12px; }
+.np-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.np-form .actions { display: flex; gap: 10px; justify-content: flex-end; }
+@media (max-width: 420px) { .np-two { grid-template-columns: 1fr; } }
+.pin-box { letter-spacing: .3em; }

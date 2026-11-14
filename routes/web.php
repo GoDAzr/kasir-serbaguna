@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('perm:pos')->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos');
         Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
+        Route::post('/pos/produk-cepat', [PosController::class, 'quickProduct'])->name('pos.produk');
     });
 
     // Beranda kasir (tampilan khusus role kasir)

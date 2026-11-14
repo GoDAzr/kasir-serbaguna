@@ -33,6 +33,7 @@
         <div class="fld"><label>Metode pengembalian dana<i class="req">*</i></label>
             <select name="refund_method"><option value="">- Pilih -</option>@foreach ($methods as $c => $n)<option value="{{ $c }}" @selected(old('refund_method') === $c)>{{ $n }}</option>@endforeach</select></div>
     </div>
+    @include('partials.pin-confirm')
     <p class="hint">Total refund dihitung otomatis dari harga bersih barang yang diretur.</p>
     <div class="actions"><a class="btn ghost" href="{{ route('retur.list') }}">Batal</a><button class="btn primary" type="submit">Simpan retur</button></div>
 </form>

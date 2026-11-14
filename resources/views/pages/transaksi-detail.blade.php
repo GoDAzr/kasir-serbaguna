@@ -66,10 +66,11 @@
     <div class="panel">
         <h3 class="sub-title">Batalkan transaksi</h3>
         <p class="muted">Transaksi yang sudah selesai tidak bisa diedit. Jika salah, batalkan dengan alasan (stok dikembalikan dan tercatat di audit).</p>
-        <form method="POST" action="{{ route('transaksi.batal', $tx->id) }}" class="grid" data-confirm="Yakin batalkan transaksi ini?">
+        <form method="POST" action="{{ route('transaksi.batal', $tx->id) }}" class="grid" data-confirm="Yakin ingin membatalkan transaksi ini? Stok akan dikembalikan." data-confirm-title="Batalkan transaksi" data-confirm-yes="Ya, batalkan" data-confirm-no="Tidak" data-confirm-danger>
             @csrf
             <div class="fld"><label>Alasan pembatalan<i class="req">*</i></label><input type="text" name="cancel_reason" value="{{ old('cancel_reason') }}" maxlength="255"></div>
             <div class="fld"><label>Catatan</label><input type="text" name="cancel_note" value="{{ old('cancel_note') }}"></div>
+            @include('partials.pin-confirm')
             <div class="actions full"><button class="btn danger" type="submit">Batalkan transaksi</button></div>
         </form>
     </div>
