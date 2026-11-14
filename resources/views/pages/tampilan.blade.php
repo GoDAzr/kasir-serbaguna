@@ -20,6 +20,30 @@
         @endforeach
     </div>
 
+    @php($heroOn = old('hero_mode', $ap['hero'] ? 'custom' : 'default') === 'custom')
+    <h3 class="sub-title">Warna header</h3>
+    <div class="opt-row opt-row-2">
+        <label class="opt">
+            <input type="radio" name="hero_mode" value="default" @checked(! $heroOn)>
+            <span class="opt-box"><span class="hero-swatch" style="background:linear-gradient(160deg,#34E07F,#14B856 45%,#0C8F3F)"></span><b>Bawaan (hijau)</b></span>
+        </label>
+        <label class="opt">
+            <input type="radio" name="hero_mode" value="custom" @checked($heroOn)>
+            <span class="opt-box"><span class="hero-swatch" id="heroSw" style="background:{{ old('hero_color', $ap['hero'] ?? '#2563eb') }}"></span><b>Warna sendiri</b></span>
+        </label>
+    </div>
+    <div class="hero-pick" id="heroPick" @unless ($heroOn) hidden @endunless>
+        <input type="color" name="hero_color" id="heroColor" value="{{ old('hero_color', $ap['hero'] ?? '#2563eb') }}" aria-label="Pilih warna header">
+        <code id="heroHex">{{ old('hero_color', $ap['hero'] ?? '#2563eb') }}</code>
+        @foreach (['#2563eb' => 'Biru', '#7c3aed' => 'Ungu', '#e11d48' => 'Merah', '#f97316' => 'Jingga', '#0ea5c6' => 'Toska', '#334155' => 'Abu gelap', '#ffd500' => 'Kuning'] as $hex => $nm)
+            <button type="button" class="sw" data-color="{{ $hex }}" title="{{ $nm }}" style="background:{{ $hex }}"></button>
+        @endforeach
+    </div>
+
+    <h3 class="sub-title">Efek kaca</h3>
+    <label class="chk"><input type="checkbox" name="glass" value="1" @checked(old('theme') ? old('glass') : $ap['glass'])> Mode kaca: kartu, menu, dan sidebar jadi tembus pandang dengan blur</label>
+    <small class="hint">Paling terlihat kalau memakai background gambar atau Malam Bintang.</small>
+
     <h3 class="sub-title">Background</h3>
     <div class="bg-grid">
         @foreach ($presets as $p)
@@ -103,6 +127,42 @@
             }
         }
     }
+
+    // ----- Warna header: pratinjau langsung (rumus sama dengan Appearance::heroCss di PHP) -----
+    function heroCss(hex) {
+        var lum = (0.299 * parseInt(hex.substr(1, 2), 16) + 0.587 * parseInt(hex.substr(3, 2), 16) + 0.114 * parseInt(hex.substr(5, 2), 16)) / 255;
+        var light = lum > 0.65, fg = light ? '#0B1220' : '#FFFFFF', ink = light ? '#0B1220' : hex;
+        var mix = function (p) { return 'color-mix(in srgb,var(--hero-2) ' + p + '%,#000)'; };
+        return ':root{--hero-2:' + hex + ';--hero-1:color-mix(in srgb,var(--hero-2) 72%,#fff);--hero-3:color-mix(in srgb,var(--hero-2) 72%,#000);--hero-fg:' + fg + ';--hero-ink:' + ink + ';}'
+            + 'html[data-theme="dark"] .hero{background:linear-gradient(160deg,' + mix(86) + ' 0%,' + mix(66) + ' 50%,' + mix(48) + ' 100%);}'
+            + 'html[data-theme="dark"] .topbar-slot.is-fixed{background:linear-gradient(90deg,' + mix(86) + ',' + mix(66) + ');}'
+            + 'html[data-theme="dark"] .icon-btn.btn-menu{color:var(--hero-2);}';
+    }
+
+    function heroPreview() {
+        var mode = form.querySelector('input[name=hero_mode]:checked').value;
+        var color = document.getElementById('heroColor').value;
+        var st = document.getElementById('heroCss');
+        document.getElementById('heroPick').hidden = mode !== 'custom';
+        document.getElementById('heroHex').textContent = color;
+        document.getElementById('heroSw').style.background = color;
+        if (mode !== 'custom') { if (st) { st.remove(); } return; }
+        if (!st) { st = document.createElement('style'); st.id = 'heroCss'; document.head.appendChild(st); }
+        st.textContent = heroCss(color);
+    }
+
+    form.querySelectorAll('.sw').forEach(function (b) {
+        b.addEventListener('click', function () {
+            document.getElementById('heroColor').value = b.getAttribute('data-color');
+            form.querySelector('input[name=hero_mode][value=custom]').checked = true;
+            heroPreview();
+        });
+    });
+    form.addEventListener('input', function (e) { if (e.target.id === 'heroColor') { form.querySelector('input[name=hero_mode][value=custom]').checked = true; heroPreview(); } });
+    form.addEventListener('change', function (e) {
+        if (e.target.name === 'hero_mode') { heroPreview(); }
+        if (e.target.name === 'glass') { document.documentElement.setAttribute('data-glass', e.target.checked ? 'on' : 'off'); }
+    });
 
     form.addEventListener('change', preview);
     form.addEventListener('input', function (e) { if (e.target.id === 'bgVeil') { preview(); } });

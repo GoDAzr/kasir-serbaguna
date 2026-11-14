@@ -61,6 +61,25 @@ class Appearance
         return null;
     }
 
+    /** CSS warna header sendiri (#rrggbb). Kosong kalau memakai warna bawaan. */
+    public static function heroCss(?string $hex): string
+    {
+        if (! $hex || ! preg_match('/^#[0-9a-f]{6}$/i', $hex)) {
+            return '';
+        }
+        $lum = (0.299 * hexdec(substr($hex, 1, 2)) + 0.587 * hexdec(substr($hex, 3, 2)) + 0.114 * hexdec(substr($hex, 5, 2))) / 255;
+        $light = $lum > 0.65;   // warna terang -> tulisan gelap
+        $fg = $light ? '#0B1220' : '#FFFFFF';
+        $ink = $light ? '#0B1220' : $hex;
+        $mix = fn (int $p) => 'color-mix(in srgb,var(--hero-2) ' . $p . '%,#000)';
+
+        return ':root{--hero-2:' . $hex . ';--hero-1:color-mix(in srgb,var(--hero-2) 72%,#fff);--hero-3:color-mix(in srgb,var(--hero-2) 72%,#000);'
+            . '--hero-fg:' . $fg . ';--hero-ink:' . $ink . ';}'
+            . 'html[data-theme="dark"] .hero{background:linear-gradient(160deg,' . $mix(86) . ' 0%,' . $mix(66) . ' 50%,' . $mix(48) . ' 100%);}'
+            . 'html[data-theme="dark"] .topbar-slot.is-fixed{background:linear-gradient(90deg,' . $mix(86) . ',' . $mix(66) . ');}'
+            . 'html[data-theme="dark"] .icon-btn.btn-menu{color:var(--hero-2);}';
+    }
+
     /** Data tampilan siap pakai untuk layout. */
     public static function for(?User $u): array
     {
@@ -87,7 +106,11 @@ class Appearance
             $key = 'plain';
         }
 
+        $hero = strtolower((string) ($u?->hero_color ?? ''));
+
         return [
+            'hero' => preg_match('/^#[0-9a-f]{6}$/', $hero) ? $hero : null,
+            'glass' => (bool) ($u?->glass ?? false),
             'theme' => $theme,
             'key' => $key,
             'type' => $type,

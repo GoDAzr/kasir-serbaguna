@@ -16,6 +16,7 @@
 <div class="dd side">
     <div class="mg-list">
         @foreach ($groups as $gi => $g)
+            @continue($g['title'] === 'Akun & Pengguna')   {{-- sudah ada di tombol Pengaturan (gerigi) --}}
             <div class="mg g-{{ $g['color'] }}" data-group="g{{ $gi }}">
                 <button type="button" class="mg-head" data-go="g{{ $gi }}" aria-expanded="false" title="{{ $g['title'] }}">
                     <span class="chip"><svg class="ico"><use href="#i-{{ $g['icon'] }}"/></svg></span>

@@ -145,3 +145,54 @@ html[data-theme="dark"] .nav a { color: #CBD5E4; }
 html[data-theme="dark"] .nav a.active { color: #fff; }
 html[data-theme="dark"] .nav a:hover { background: #1B2740; }
 html[data-theme="dark"] .nav a.danger { color: #FF6B76; }
+
+/* Pilihan warna header */
+.tampilan .opt-row-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hero-swatch { display: block; height: 34px; border-radius: 10px; border: 1px solid var(--line); }
+.hero-pick { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.hero-pick[hidden] { display: none; }
+.hero-pick input[type=color] { width: 54px; height: 40px; padding: 2px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); cursor: pointer; }
+.hero-pick code { font-size: 13px; font-weight: 700; color: var(--muted); }
+.hero-pick .sw { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.hero-pick .sw:hover { transform: scale(1.12); }
+
+/* =====================================================================
+   MODE KACA (glass): permukaan tembus pandang + blur, tepi terang
+   ===================================================================== */
+html[data-glass="on"] body .panel, html[data-glass="on"] body .card, html[data-glass="on"] body .stat, html[data-glass="on"] body .dd.wide .mg,
+html[data-glass="on"] body .sub-card, html[data-glass="on"] body .pcard, html[data-glass="on"] body .rep-row, html[data-glass="on"] body .user-card {
+    background: linear-gradient(135deg, rgba(255,255,255,.66), rgba(255,255,255,.36));
+    border-top-color: rgba(255,255,255,.7); border-right-color: rgba(255,255,255,.45); border-bottom-color: rgba(255,255,255,.4);
+    box-shadow: 0 8px 32px rgba(15,23,42,.16), inset 0 1px 0 rgba(255,255,255,.65);
+    -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+}
+html[data-glass="on"] body .stat { border-left-color: var(--t, var(--blue)); }
+html[data-glass="on"] body .sidebar {
+    background: linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.38));
+    border-right-color: rgba(255,255,255,.5);
+    -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+}
+html[data-glass="on"] body .gear-menu, html[data-glass="on"] body .modal-box {
+    background: rgba(255,255,255,.8);
+    border: 1px solid rgba(255,255,255,.6);
+    -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%);
+}
+html[data-glass="on"] body h2.sec-title, html[data-glass="on"] body .content > h2, html[data-glass="on"] body .page > h2 {
+    background: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.55);
+}
+html[data-glass="on"]:not([data-theme="dark"]) { --muted: #475569; }
+
+/* kaca di mode gelap */
+html[data-theme="dark"][data-glass="on"] body .panel, html[data-theme="dark"][data-glass="on"] body .card, html[data-theme="dark"][data-glass="on"] body .stat,
+html[data-theme="dark"][data-glass="on"] body .dd.wide .mg, html[data-theme="dark"][data-glass="on"] body .sub-card, html[data-theme="dark"][data-glass="on"] body .pcard,
+html[data-theme="dark"][data-glass="on"] body .rep-row, html[data-theme="dark"][data-glass="on"] body .user-card {
+    background: linear-gradient(135deg, rgba(34,46,74,.58), rgba(14,22,42,.38));
+    border-top-color: rgba(255,255,255,.2); border-right-color: rgba(255,255,255,.1); border-bottom-color: rgba(255,255,255,.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+}
+html[data-theme="dark"][data-glass="on"] body .stat { border-left-color: var(--t, var(--blue)); }
+html[data-theme="dark"][data-glass="on"] body .sidebar { background: linear-gradient(180deg, rgba(24,34,58,.6), rgba(12,18,34,.45)); border-right-color: rgba(255,255,255,.1); }
+html[data-theme="dark"][data-glass="on"] body .gear-menu, html[data-theme="dark"][data-glass="on"] body .modal-box { background: rgba(18,27,46,.82); border-color: rgba(255,255,255,.14); }
+html[data-theme="dark"][data-glass="on"] body h2.sec-title, html[data-theme="dark"][data-glass="on"] body .content > h2, html[data-theme="dark"][data-glass="on"] body .page > h2 {
+    background: rgba(20,30,52,.5); border-color: rgba(255,255,255,.14);
+}

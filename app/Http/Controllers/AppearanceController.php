@@ -33,7 +33,11 @@ class AppearanceController extends Controller
             'bg_key' => ['required', Rule::in($keys)],
             'bg_veil' => 'required|integer|min:0|max:80',
             'bg_photo' => 'nullable|image|max:6144',
+            'glass' => 'nullable|boolean',
+            'hero_mode' => ['required', Rule::in(['default', 'custom'])],
+            'hero_color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ], [
+            'hero_color.regex' => 'Warna header tidak valid.',
             'bg_photo.image' => 'File harus berupa gambar (jpg, png, webp).',
             'bg_photo.max' => 'Ukuran foto maksimal 6 MB.',
             'bg_key.in' => 'Pilihan background tidak dikenal.',
@@ -58,7 +62,14 @@ class AppearanceController extends Controller
             }
         }
 
+        $hero = $data['hero_mode'] === 'custom' ? strtolower((string) ($data['hero_color'] ?? '')) : null;
+        if ($data['hero_mode'] === 'custom' && ! $hero) {
+            return back()->withInput()->withErrors(['hero_color' => 'Pilih warna header dulu.']);
+        }
+
         $u->forceFill([
+            'hero_color' => $hero,
+            'glass' => $r->boolean('glass'),
             'theme' => $data['theme'],
             'bg_key' => $data['bg_key'],
             'bg_veil' => $data['bg_veil'],

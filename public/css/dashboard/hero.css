@@ -2,8 +2,8 @@
 .main { transition: margin-left .3s ease; min-height: 100vh; }
 
 .hero {
-    background: linear-gradient(160deg, var(--blue-light) 0%, var(--blue) 45%, var(--blue-dark) 100%);
-    color: var(--white);
+    background: linear-gradient(160deg, var(--hero-1, var(--blue-light)) 0%, var(--hero-2, var(--blue)) 45%, var(--hero-3, var(--blue-dark)) 100%);
+    color: var(--hero-fg, var(--white));
     padding: 16px 16px 26px;
     position: relative;
 }
@@ -19,7 +19,7 @@
     left: var(--ml, 0px);
     z-index: 45;
     padding: 10px 16px;
-    background: linear-gradient(90deg, var(--blue-light), var(--blue));
+    background: linear-gradient(90deg, var(--hero-1, var(--blue-light)), var(--hero-2, var(--blue)));
     box-shadow: 0 6px 18px -8px rgba(0,0,0,.35);
     transition: left .3s ease;
 }
@@ -28,7 +28,7 @@
     width: 42px; height: 42px; flex: none;
     border: 0; border-radius: 14px;
     background: rgba(255,255,255,.16);
-    color: var(--white);
+    color: var(--hero-fg, var(--white));
     display: inline-flex; align-items: center; justify-content: center;
     transition: background .15s, transform 80ms;
 }
@@ -37,7 +37,7 @@
 .icon-btn:active { transform: scale(.94); }
 
 /* Tiap tombol di header punya warna sendiri */
-.icon-btn.btn-menu { background: var(--white); color: var(--blue); }
+.icon-btn.btn-menu { background: var(--white); color: var(--hero-ink, var(--blue)); }
 .icon-btn.btn-menu:hover { background: #E8FBF0; }
 .icon-btn.btn-gear { background: var(--yellow); color: var(--black); }
 .icon-btn.btn-gear:hover { background: #FFE24D; }

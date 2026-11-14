@@ -1,6 +1,9 @@
 {{-- Tema & background pengguna: dipasang di <head> supaya tidak berkedip saat halaman dimuat --}}
 @php($ap = \App\Support\Appearance::for(\App\Support\Tenant::user()))
 <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+@if ($ap['hero'])
+    <style id="heroCss">{!! \App\Support\Appearance::heroCss($ap['hero']) !!}</style>
+@endif
 @if ($ap['type'] === 'scene')
     <link rel="stylesheet" href="{{ asset('css/bg-scene.css') }}">
 @endif
@@ -11,6 +14,7 @@
     var h = document.documentElement;
     h.setAttribute('data-theme', dark ? 'dark' : 'light');
     h.setAttribute('data-theme-pref', t);
+    h.setAttribute('data-glass', @json($ap['glass'] ? 'on' : 'off'));
     window.APP_THEME = t;
     window.CSRF = @json(csrf_token());
     window.THEME_URL = @json(route('akun.tema'));

@@ -31,6 +31,8 @@
         </div>
     </section>
 
+    @include('partials.summary-charts')
+
     <section class="sec-recent">
         <h2 class="sec-title">Transaksi terakhir</h2>
         <div class="card">
