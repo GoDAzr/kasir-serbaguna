@@ -90,7 +90,7 @@
                 return '<div class="cl" data-i="' + i + '"><div class="cl-top"><b>' + esc(l.name) + '</b><button type="button" class="x" data-act="del" aria-label="Hapus">&times;</button></div>' +
                     '<div class="cl-row"><div class="qty"><button type="button" data-act="minus">&minus;</button><input type="number" min="1" value="' + l.qty + '" data-f="qty"><button type="button" data-act="plus">+</button></div>' +
                     '<label>Harga<input type="number" min="0" step="any" value="' + l.price + '" data-f="price"' + (DATA.canPrice ? '' : ' readonly') + '></label>' +
-                    '<label>Diskon<input type="number" min="0" step="any" value="' + l.disc + '" data-f="disc"></label>' +
+                    (DATA.canDisc === false ? '' : '<label>Diskon<input type="number" min="0" step="any" value="' + l.disc + '" data-f="disc"></label>') +
                     '<b class="lt">' + rp(lineTotal(l)) + '</b></div>' +
                     '<input type="text" class="cl-note" placeholder="Catatan produk" value="' + esc(l.note) + '" data-f="note" maxlength="255"></div>';
             }).join('');

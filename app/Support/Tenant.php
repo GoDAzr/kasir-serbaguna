@@ -30,6 +30,18 @@ class Tenant
         return $u && in_array($u->role, ['owner', 'admin'], true);
     }
 
+    /** True kalau pengguna ini memakai tampilan kasir (role-nya ditandai "tampilan kasir" oleh owner). */
+    public static function cashierUi(?User $u = null): bool
+    {
+        $u ??= self::user();
+        if (! $u || self::isAdmin($u)) {
+            return false;
+        }
+        $role = self::role($u);
+
+        return (bool) ($role->cashier_ui ?? false);
+    }
+
     public static function role(?User $u = null): ?object
     {
         $u ??= self::user();

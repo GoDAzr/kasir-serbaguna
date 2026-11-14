@@ -1,3 +1,7 @@
+{{-- Pengguna dengan role "tampilan kasir" memakai kerangka halaman yang berbeda (layouts/kasir) --}}
+@if (\App\Support\Tenant::cashierUi())
+    @include('layouts.kasir')
+@else
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -55,3 +59,4 @@
     @stack('scripts')
 </body>
 </html>
+@endif

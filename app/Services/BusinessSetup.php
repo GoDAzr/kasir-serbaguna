@@ -34,6 +34,7 @@ class BusinessSetup
             DB::table('roles')->updateOrInsert(['business_id' => $b, 'slug' => $slug], [
                 'name' => $nm, 'description' => $desc, 'permissions' => json_encode($perms),
                 'all_branches' => $allBr, 'is_active' => 1, 'is_system' => 1,
+                'cashier_ui' => in_array($slug, config('permissions.cashier_ui_roles', []), true),
                 'created_at' => $now, 'updated_at' => $now,
             ]);
         }

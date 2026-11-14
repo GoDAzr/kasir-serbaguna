@@ -44,6 +44,7 @@ class PosController extends Controller
             'items' => $items, 'methods' => $methods, 'taxes' => $taxes, 'customers' => $customers,
             'branches' => Tenant::branches(), 'shifts' => self::SHIFTS, 'types' => self::TYPES,
             'canPrice' => Tenant::isAdmin(),
+            'canDisc' => Tenant::can('pos_diskon'),
         ]);
     }
 
@@ -95,9 +96,12 @@ class PosController extends Controller
             throw ValidationException::withMessages(['received' => 'Uang diterima wajib diisi untuk pembayaran tunai.']);
         }
 
+        $canDisc = Tenant::can('pos_diskon');   // izin dari owner
+        $canDebt = Tenant::can('pos_piutang');
+
         $proofPath = $r->hasFile('proof') ? $r->file('proof')->store("uploads/$b", 'public') : null;
 
-        $tx = DB::transaction(function () use ($data, $b, $user, $method, $customerId, $isCash, $proofPath) {
+        $tx = DB::transaction(function () use ($data, $b, $user, $method, $customerId, $isCash, $proofPath, $canDisc, $canDebt) {
             $warehouse = StockService::defaultWarehouse((int) $data['branch_id']);
             $merged = [];
             foreach ($data['items'] as $it) {
@@ -128,7 +132,7 @@ class PosController extends Controller
                     $price = (float) $it['price'];
                 }
                 $qty = (int) $it['qty'];
-                $disc = min((float) ($it['discount'] ?? 0), $price * $qty);
+                $disc = $canDisc ? min((float) ($it['discount'] ?? 0), $price * $qty) : 0;
                 $line = $price * $qty - $disc;
                 $subtotal += $line;
 
@@ -156,7 +160,7 @@ class PosController extends Controller
                 ];
             }
 
-            $discount = min((float) ($data['discount'] ?? 0), $subtotal);
+            $discount = $canDisc ? min((float) ($data['discount'] ?? 0), $subtotal) : 0;
             $base = $subtotal - $discount;
 
             // Pajak / biaya layanan yang aktif
@@ -180,6 +184,9 @@ class PosController extends Controller
             $received = $isCash ? (float) $data['received'] : $paid;
             if ($isCash && $received + 0.001 < $paid) {
                 throw ValidationException::withMessages(['received' => 'Uang diterima kurang dari nominal pembayaran.']);
+            }
+            if ($paid + 0.001 < $total && ! $canDebt) {
+                throw ValidationException::withMessages(['amount' => 'Anda tidak punya izin menjual belum lunas. Nominal harus sama dengan total.']);
             }
             if ($paid + 0.001 < $total && ! $customerId) {
                 throw ValidationException::withMessages(['customer_id' => 'Pembayaran belum lunas: pilih pelanggan agar tercatat sebagai piutang.']);

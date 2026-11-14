@@ -46,12 +46,24 @@ Route::middleware('auth')->group(function () {
         Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
     });
 
-    // Transaksi, pembatalan, retur
+    // Beranda kasir (tampilan khusus role kasir)
+    Route::get('/kasir', [\App\Http\Controllers\KasirController::class, 'home'])->name('kasir');
+
+    // Owner mengatur apa saja yang boleh dilakukan kasir
+    Route::middleware('perm:pengguna')->group(function () {
+        Route::get('/akun/akses-kasir', [\App\Http\Controllers\CashierAccessController::class, 'show'])->name('akses.kasir');
+        Route::post('/akun/akses-kasir', [\App\Http\Controllers\CashierAccessController::class, 'save']);
+    });
+
+    // Transaksi (lihat + struk)
     Route::middleware('perm:transaksi')->group(function () {
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi');
         Route::get('/transaksi/{id}', [TransaksiController::class, 'show'])->whereNumber('id')->name('transaksi.show');
         Route::get('/transaksi/{id}/struk', [TransaksiController::class, 'struk'])->whereNumber('id')->name('transaksi.struk');
-        Route::post('/transaksi/{id}/batal', [TransaksiController::class, 'batal'])->whereNumber('id')->name('transaksi.batal');
+    });
+    // Pembatalan dan retur punya izin sendiri
+    Route::post('/transaksi/{id}/batal', [TransaksiController::class, 'batal'])->whereNumber('id')->middleware('perm:transaksi_batal')->name('transaksi.batal');
+    Route::middleware('perm:retur')->group(function () {
         Route::get('/retur', [TransaksiController::class, 'returList'])->name('retur.list');
         Route::get('/retur/baru', [TransaksiController::class, 'returForm'])->name('retur.form');
         Route::post('/retur', [TransaksiController::class, 'returStore'])->name('retur.store');

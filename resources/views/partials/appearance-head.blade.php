@@ -1,6 +1,7 @@
 {{-- Tema & background pengguna: dipasang di <head> supaya tidak berkedip saat halaman dimuat --}}
 @php($ap = \App\Support\Appearance::for(\App\Support\Tenant::user()))
 <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+<link rel="stylesheet" href="{{ asset('css/kasir.css') }}">
 @if ($ap['hero'])
     <style id="heroCss">{!! \App\Support\Appearance::heroCss($ap['hero']) !!}</style>
 @endif

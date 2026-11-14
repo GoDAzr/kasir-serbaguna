@@ -43,7 +43,7 @@
 
             <div class="totals">
                 <div><span>Subtotal</span><b id="tSub">Rp 0</b></div>
-                <div class="inl-field"><span>Diskon transaksi (Rp)</span><input type="number" id="fDisc" min="0" step="any" value="0"></div>
+                <div class="inl-field" @unless ($canDisc ?? true) hidden @endunless><span>Diskon transaksi (Rp)</span><input type="number" id="fDisc" min="0" step="any" value="0"></div>
                 <div><span>Pajak / biaya layanan</span><b id="tTax">Rp 0</b></div>
                 <div class="grand"><span>Total</span><b id="tTotal">Rp 0</b></div>
             </div>
@@ -101,7 +101,7 @@
     </div>
 </div>
 
-@php $posData = ['items' => $items, 'taxes' => $taxes, 'canPrice' => $canPrice, 'url' => route('pos.checkout')]; @endphp
+@php $posData = ['items' => $items, 'taxes' => $taxes, 'canPrice' => $canPrice, 'canDisc' => $canDisc ?? true, 'url' => route('pos.checkout')]; @endphp
 <script type="application/json" id="posData">{!! json_encode($posData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) !!}</script>
 @endsection
 

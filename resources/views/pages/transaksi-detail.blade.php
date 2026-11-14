@@ -11,7 +11,7 @@
         </div>
         <div class="actions">
             <a class="btn ghost" href="{{ route('transaksi.struk', $tx->id) }}" target="_blank" rel="noopener">Cetak struk</a>
-            @if ($tx->status !== 'void')<a class="btn ghost" href="{{ route('retur.form', ['invoice' => $tx->invoice_no]) }}">Retur</a>@endif
+            @if ($tx->status !== 'void' && \App\Support\Tenant::can('retur'))<a class="btn ghost" href="{{ route('retur.form', ['invoice' => $tx->invoice_no]) }}">Retur</a>@endif
         </div>
     </div>
     <dl class="dl">
@@ -62,7 +62,7 @@
     <div class="panel"><h3 class="sub-title">Pembatalan</h3>
         <dl class="dl"><dt>Alasan</dt><dd>{{ $tx->cancel_reason }}</dd><dt>Catatan</dt><dd>{{ $tx->cancel_note ?: '-' }}</dd><dt>Waktu</dt><dd>{{ $tx->voided_at?->format('d/m/Y H:i') }}</dd></dl>
     </div>
-@elseif (\App\Support\Tenant::can('transaksi') && $returns->isEmpty())
+@elseif (\App\Support\Tenant::can('transaksi_batal') && $returns->isEmpty())
     <div class="panel">
         <h3 class="sub-title">Batalkan transaksi</h3>
         <p class="muted">Transaksi yang sudah selesai tidak bisa diedit. Jika salah, batalkan dengan alasan (stok dikembalikan dan tercatat di audit).</p>

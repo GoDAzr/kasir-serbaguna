@@ -455,6 +455,13 @@ return [
                     null,
                     'pengguna',
                 ],
+                [
+                    'Akses Kasir',
+                    'pos',
+                    [],
+                    '/akun/akses-kasir',
+                    'pengguna',
+                ],
             ],
         ],
         [

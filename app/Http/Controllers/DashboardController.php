@@ -12,6 +12,10 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        if (\App\Support\Tenant::cashierUi()) {
+            return redirect()->route('kasir');
+        }
+
         $now = now();
         $hour = (int) $now->format('G');
 

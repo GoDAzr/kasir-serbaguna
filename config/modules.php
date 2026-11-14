@@ -548,6 +548,7 @@ return [
             ['description', 'Deskripsi', 'textarea'],
             ['permissions', 'Daftar izin', 'perms', 'r' => 1],
             ['all_branches', 'Boleh akses semua cabang', 'check'],
+            ['cashier_ui', 'Pakai tampilan kasir (sederhana, fokus ke kasir; bukan tampilan owner)', 'check'],
             ['is_active', 'Status', 'select', 'r' => 1, 'opts' => $aktif],
         ],
     ],
